@@ -3,21 +3,20 @@ package com.andrew.and.dima.gravityshawarma;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.view.SurfaceHolder;
 
 class DrawThread extends Thread {
-    private Planet planet;
     private Paint paint;
     private boolean running = false;
     private SurfaceHolder surfaceHolder;
     private GameSurface gameSurface;
+    private Map map;
 
     public DrawThread(GameSurface newGameSurface) {
+        map = new Map();
         gameSurface = newGameSurface;
         surfaceHolder = gameSurface.getHolder();
 
-        planet = new Planet(500, new Point(200, 300));
         paint = new Paint();
         paint.setColor(Color.GREEN);
     }
@@ -35,9 +34,10 @@ class DrawThread extends Thread {
                 canvas = surfaceHolder.lockCanvas(null);
                 if (canvas == null)
                     continue;
-            canvas.drawColor(Color.WHITE);
-            planet.draw(canvas, paint);
 
+                canvas.drawColor(Color.BLACK);
+                map.update(false);
+                map.draw(canvas, paint);
             } finally {
                 if (canvas != null) {
                     surfaceHolder.unlockCanvasAndPost(canvas);

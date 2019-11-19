@@ -2,14 +2,34 @@ package com.andrew.and.dima.gravityshawarma;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Point;
 
 public abstract class GameObject {
-    protected Point position;
+    protected float x, y, r;
 
-    GameObject(Point newPosition) {
-        position = newPosition;
+    GameObject(float newX, float newY, float newR) {
+        x = newX;
+        y = newY;
+        r = newR;
     }
 
     public abstract void draw(Canvas canvas, Paint paint);
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getR() {
+        return r;
+    }
+
+    public boolean touches(GameObject another) {
+        float dx = x - another.getX();
+        float dy = y - another.getY();
+        float dr = r + another.getR();
+        return (dx * dx + dy * dy) <= dr * dr;
+    }
 }

@@ -2,21 +2,27 @@ package com.andrew.and.dima.gravityshawarma;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Point;
 
 public class Planet extends GameObject {
-    private double mass;
-    private double radius;
-    private final double RADIUS_COEFFICIENT = 20;
+    private float mass;
 
-    Planet(double newMass, Point newPosition) {
-        super(newPosition);
+    Planet(float x, float y, float newMass) {
+        super(x, y, Constants.RADIUS_COEFFICIENT * (float) Math.pow(newMass, 1f / 3));
         mass = newMass;
-        radius = Math.pow(mass, 1. / 3) * RADIUS_COEFFICIENT;
     }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        canvas.drawCircle(position.x, position.y, (float)radius, paint);
+        canvas.drawCircle(x, y, r, paint);
+    }
+
+    public FloatVector calculateVector(Spaceship spaceship) {
+        float dx = x - spaceship.getX();
+        float dy = y - spaceship.getY();
+        float length = (float)Math.sqrt(dx * dx + dy * dy);
+
+        float power = mass * Constants.GRAVITY_COEFFICIENT / (dx * dx + dy * dy);
+
+        return new FloatVector(dx / length * power, dy / length * power);
     }
 }
