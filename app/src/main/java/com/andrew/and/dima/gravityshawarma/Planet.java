@@ -1,6 +1,7 @@
 package com.andrew.and.dima.gravityshawarma;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 
 public class Planet extends GameObject {
@@ -13,6 +14,7 @@ public class Planet extends GameObject {
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
+        paint.setColor(Color.GREEN);
         canvas.drawCircle(x, y, r, paint);
     }
 

@@ -13,6 +13,5 @@ public class Shaverma extends GameObject {
     public void draw(Canvas canvas, Paint paint) {
         paint.setColor(Color.RED);
         canvas.drawCircle(x, y, r, paint);
-        paint.setColor(Color.GREEN);
     }
 }

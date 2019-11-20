@@ -35,7 +35,6 @@ class DrawThread extends Thread {
                 if (canvas == null)
                     continue;
 
-                canvas.drawColor(Color.BLACK);
                 map.update(false);
                 map.draw(canvas, paint);
             } finally {

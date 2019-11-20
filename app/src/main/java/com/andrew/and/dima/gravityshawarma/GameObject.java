@@ -26,6 +26,14 @@ public abstract class GameObject {
         return r;
     }
 
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
     public boolean touches(GameObject another) {
         float dx = x - another.getX();
         float dy = y - another.getY();
