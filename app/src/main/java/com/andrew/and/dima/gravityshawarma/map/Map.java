@@ -88,7 +88,7 @@ public class Map {
   // This function checks if interaction between the spaceship and shavermas /
   // black holes is necessary, performs it. After that it updates the
   // coordinates of the spaceship.
-  public void updateInternalState(boolean accelerationOn) {
+  public void updateInternalState(FloatVector accelerationOn) {
     updateSpaceshipState(accelerationOn);
     collectShavermas();
     interactWithPlanets();
@@ -98,20 +98,19 @@ public class Map {
 
   // This function updates spaceship internalX, internalY coordinates
   // according to its move vector and current acceleration.
-  private void updateSpaceshipState(boolean accelerationOn) {
-    FloatVector deltaVector = new FloatVector();
+  private void updateSpaceshipState(FloatVector acceleration) {
+    FloatVector deltaVector = new FloatVector(acceleration);
+
+    if (!acceleration.isZero()) {
+      spaceship.setAccelerated(true);
+      // TODO: improve this logic. Reduce the fuel of the spaceship, etc.
+    } else {
+      spaceship.setAccelerated(false);
+    }
 
     for (Planet planet : planets) {
       deltaVector.add(planet.calculateForceVector(
               spaceship.getInternalX(), spaceship.getInternalY()));
-    }
-
-    if (accelerationOn) {
-      spaceship.setAccelerated(true);
-      // TODO: improve this logic. Reduce the fuel of the spaceship, etc.
-      spaceship.addAccelerationToMoveVector(new FloatVector(1, 1));
-    } else {
-      spaceship.setAccelerated(false);
     }
 
     spaceship.addAccelerationToMoveVector(deltaVector);

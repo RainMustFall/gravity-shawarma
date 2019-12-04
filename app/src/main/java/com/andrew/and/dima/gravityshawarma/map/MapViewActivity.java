@@ -14,6 +14,8 @@ import android.view.ViewTreeObserver;
 import com.andrew.and.dima.gravityshawarma.game_object.BlackHole;
 import com.andrew.and.dima.gravityshawarma.game_object.Planet;
 import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
+import com.andrew.and.dima.gravityshawarma.utils.Constants;
+import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -59,7 +61,7 @@ public class MapViewActivity extends AppCompatActivity {
 
   private void onTimerEvent() {
     mapView.updateSize();
-    map.updateInternalState(mapView.isTouched());
+    map.updateInternalState(mapView.getAcceleration());
     map.setScreenSize(mapView.getWidthDp(), mapView.getHeightDp());
     map.updateScreenCoordinates();
     mapView.invalidate();
@@ -76,10 +78,13 @@ public class MapViewActivity extends AppCompatActivity {
     private float widthDp;
     private float heightDp;
 
+    private FloatVector acceleration;
+
     private boolean isTouched = false;
 
     public MapView(Context context) {
       super(context);
+      acceleration = new FloatVector();
       painter = new Paint();
       updateSize();
     }
@@ -106,6 +111,10 @@ public class MapViewActivity extends AppCompatActivity {
       return isTouched;
     }
 
+    public FloatVector getAcceleration() {
+      return acceleration;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
       canvas.drawColor(Color.WHITE);
@@ -127,9 +136,18 @@ public class MapViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-      System.out.println(event.getAction());
-      isTouched = (event.getAction() == MotionEvent.ACTION_DOWN
-              || event.getAction() == MotionEvent.ACTION_MOVE);
+      if (event.getAction() == MotionEvent.ACTION_DOWN
+              || event.getAction() == MotionEvent.ACTION_MOVE) {
+        float dx = event.getX() - getWidth() / 2f;
+        float dy = event.getY() - getHeight() / 2f;
+
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        acceleration.x = dx / length * Constants.ACCELERATION_COEFFICIENT;
+        acceleration.y = dy / length * Constants.ACCELERATION_COEFFICIENT;
+      } else {
+        acceleration.x = 0;
+        acceleration.y = 0;
+      }
       return true;
     }
   }

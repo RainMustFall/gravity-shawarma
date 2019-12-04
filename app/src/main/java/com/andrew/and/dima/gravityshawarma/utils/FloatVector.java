@@ -14,8 +14,17 @@ public class FloatVector {
     this.y = y;
   }
 
+  public FloatVector(FloatVector another) {
+    this.x = another.x;
+    this.y = another.y;
+  }
+
   public void add(FloatVector another) {
     x += another.x;
     y += another.y;
+  }
+
+  public boolean isZero() {
+    return x == 0 && y == 0;
   }
 }
