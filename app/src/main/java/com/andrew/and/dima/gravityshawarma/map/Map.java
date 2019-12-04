@@ -28,6 +28,7 @@ public class Map {
 
   private float screenWidthDp = 0;
   private float screenHeightDp = 0;
+  private float pixelDensity = 0;
 
   private float offsetX;
   private float offsetY;
@@ -39,35 +40,39 @@ public class Map {
     randomGenerator = new Random();
 
     planets = new ArrayList<>(Arrays.asList(
-        new Planet(700, 200, 500),
-        new Planet(700, 500, 500),
-        new Planet(800, 600, 500),
-        new Planet(900, 700, 500),
-        new Planet(1000, 600, 500),
-        new Planet(1100, 500, 500),
-        new Planet(1200, 400, 500),
-        new Planet(1300, 250, 500),
-        new Planet(1400, 400, 500),
-        new Planet(1500, 500, 1000),
-        new Planet(1700, 500, 700),
-        new Planet(1900, 500, 700),
-        new Planet(400, 500, 1000),
-        new Planet(400, 700, 500),
-        new Planet(400, 800, 1000),
-        new Planet(400, 1000, 1000)
+            new Planet(700, 200, 500),
+            new Planet(700, 500, 500),
+            new Planet(800, 600, 500),
+            new Planet(900, 700, 500),
+            new Planet(1000, 600, 500),
+            new Planet(1100, 500, 500),
+            new Planet(1200, 400, 500),
+            new Planet(1300, 250, 500),
+            new Planet(1400, 400, 500),
+            new Planet(1500, 500, 1000),
+            new Planet(1700, 500, 700),
+            new Planet(1900, 500, 700),
+            new Planet(400, 500, 1000),
+            new Planet(400, 700, 500),
+            new Planet(400, 800, 1000),
+            new Planet(400, 1000, 1000)
     ));
 
     shavermas = new LinkedList<>(Arrays.asList(
-        new Shaverma(510, 150),
-        new Shaverma(750, 200)
+            new Shaverma(510, 150),
+            new Shaverma(750, 200)
     ));
 
     blackHoles = new ArrayList<>(Arrays.asList(
-        new BlackHole(950, 400),
-        new BlackHole(1550, 500)
+            new BlackHole(950, 400),
+            new BlackHole(1550, 500)
     ));
 
     spaceship = new Spaceship(900, 1000);
+  }
+
+  public void setPixelDensity(float pixelDensity) {
+    this.pixelDensity = pixelDensity;
   }
 
   public void setScreenSize(float screenWidthDp, float screenHeightDp) {
@@ -98,7 +103,7 @@ public class Map {
 
     for (Planet planet : planets) {
       deltaVector.add(planet.calculateForceVector(
-          spaceship.getInternalX(), spaceship.getInternalY()));
+              spaceship.getInternalX(), spaceship.getInternalY()));
     }
 
     if (accelerationOn) {
@@ -111,24 +116,24 @@ public class Map {
 
     spaceship.addAccelerationToMoveVector(deltaVector);
 
-    if (spaceship.getInternalX() <= 0 ||
-        spaceship.getInternalX() >= MAP_WIDTH ||
-        spaceship.getInternalY() <= 0 ||
-        spaceship.getInternalY() >= MAP_HEIGHT) {
+    if (spaceship.getScreenX() < 0 ||
+            spaceship.getScreenX() > screenWidthDp * pixelDensity ||
+            spaceship.getScreenY() < 0 ||
+            spaceship.getScreenY() > screenHeightDp * pixelDensity) {
       finishGame(false);
     }
   }
 
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
-  public void updateScreenCoordinates(float pixelDensity) {
+  public void updateScreenCoordinates() {
     offsetX += spaceship.getMoveX() * Constants.MAP_OFFSET_COEFFICIENT;
     offsetY += spaceship.getMoveY() * Constants.MAP_OFFSET_COEFFICIENT;
 
-    setScreenCoordinates(planets, pixelDensity);
-    setScreenCoordinates(blackHoles, pixelDensity);
-    setScreenCoordinates(shavermas, pixelDensity);
-    setScreenCoordinates(spaceship, pixelDensity);
+    setScreenCoordinates(planets);
+    setScreenCoordinates(blackHoles);
+    setScreenCoordinates(shavermas);
+    setScreenCoordinates(spaceship);
   }
 
   private void collectShavermas() {
@@ -142,16 +147,16 @@ public class Map {
     }
   }
 
-  private void setScreenCoordinates(List<? extends GameObject> objects, float pixelDensity) {
+  private void setScreenCoordinates(List<? extends GameObject> objects) {
     for (GameObject object : objects) {
-      setScreenCoordinates(object, pixelDensity);
+      setScreenCoordinates(object);
     }
   }
 
-  private void setScreenCoordinates(GameObject object, float pixelDensity) {
-      object.setScreenX(pixelDensity * (object.getInternalX() + offsetX));
-      object.setScreenY(pixelDensity * (object.getInternalY() + offsetY));
-      object.setScreenRadius(pixelDensity * object.getInternalRadius());
+  private void setScreenCoordinates(GameObject object) {
+    object.setScreenX(pixelDensity * (object.getInternalX() + offsetX));
+    object.setScreenY(pixelDensity * (object.getInternalY() + offsetY));
+    object.setScreenRadius(pixelDensity * object.getInternalRadius());
   }
 
   private void interactWithBlackHoles() {
@@ -189,7 +194,6 @@ public class Map {
   private void finishGame(boolean win) {
     finished = true;
     finishedState = win;
-    System.out.println("finish");
   }
 
   public boolean hasGameFinished() {

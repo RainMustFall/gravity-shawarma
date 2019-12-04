@@ -38,6 +38,7 @@ public class MapViewActivity extends AppCompatActivity {
       @Override
       public void run() {
         map.initOffsetCoordinates(mapView.getWidthDp(), mapView.getHeightDp());
+        map.setPixelDensity(mapView.getPixelDensity());
       }
     });
 
@@ -60,7 +61,7 @@ public class MapViewActivity extends AppCompatActivity {
     mapView.updateSize();
     map.updateInternalState(mapView.isTouched());
     map.setScreenSize(mapView.getWidthDp(), mapView.getHeightDp());
-    map.updateScreenCoordinates(mapView.getPixelDensity());
+    map.updateScreenCoordinates();
     mapView.invalidate();
 
     if (map.hasGameFinished()) {
@@ -126,7 +127,9 @@ public class MapViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-      isTouched = (event.getAction() == MotionEvent.ACTION_DOWN);
+      System.out.println(event.getAction());
+      isTouched = (event.getAction() == MotionEvent.ACTION_DOWN
+              || event.getAction() == MotionEvent.ACTION_MOVE);
       return true;
     }
   }
