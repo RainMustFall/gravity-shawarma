@@ -37,7 +37,7 @@ public class Spaceship extends GameObject {
   public void teleport(float currentBlackHoleX, float currentBlackHoleY,
                        float nextBlackHoleX, float nextBlackHoleY) {
     internalX += nextBlackHoleX - currentBlackHoleX;
-    internalY += nextBlackHoleY - currentBlackHoleY;
+    internalY -= nextBlackHoleY - currentBlackHoleY;
   }
 
   public void setAccelerated(boolean state) {

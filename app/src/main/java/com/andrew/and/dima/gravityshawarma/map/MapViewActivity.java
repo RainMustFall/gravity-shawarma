@@ -118,12 +118,7 @@ public class MapViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-      if (event.getAction() == MotionEvent.ACTION_DOWN) {
-        isTouched = true;
-        performClick();
-      } else {
-        isTouched = false;
-      }
+      isTouched = (event.getAction() == MotionEvent.ACTION_DOWN);
       return true;
     }
   }

@@ -168,7 +168,6 @@ public class Map {
         // TODO: improve random logic.
         int nextBlackHoleIndex =
             randomGenerator.nextInt(blackHoles.size());
-
         spaceship.teleport(
             blackHoles.get(i).getInternalX(),
             blackHoles.get(i).getInternalY(),
