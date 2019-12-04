@@ -21,11 +21,8 @@ public class Map {
   private LinkedList<Shaverma> shavermas;
   private ArrayList<BlackHole> blackHoles;
 
-  private float INTERNAL_WIDTH = 1600;
-  private float INTERNAL_HEIGHT = 800;
-
-  private float SCREEN_WIDTH = 0;
-  private float SCREEN_HEIGHT = 0;
+  private float screenWidthDp = 0;
+  private float screenHeightDp = 0;
 
   private boolean finished = false;
   private boolean finishedState;
@@ -35,7 +32,18 @@ public class Map {
 
     planets = new ArrayList<>(Arrays.asList(
         new Planet(700, 500, 500),
-        new Planet(1500, 500, 1000)
+        new Planet(800, 600, 500),
+        new Planet(900, 700, 500),
+        new Planet(1000, 600, 500),
+        new Planet(1100, 500, 500),
+        new Planet(1200, 400, 500),
+        new Planet(1300, 250, 500),
+        new Planet(1400, 400, 500),
+        new Planet(1500, 500, 1000),
+        new Planet(400, 500, 1000),
+        new Planet(400, 700, 500),
+        new Planet(400, 800, 1000),
+        new Planet(400, 1000, 1000)
     ));
 
     shavermas = new LinkedList<>(Arrays.asList(
@@ -51,9 +59,9 @@ public class Map {
     spaceship = new Spaceship(900, 1000);
   }
 
-  public void setScreenSize(float screenWidth, float screenHeight) {
-    SCREEN_WIDTH = screenWidth;
-    SCREEN_HEIGHT = screenHeight;
+  public void setScreenSize(float screenWidthDp, float screenHeightDp) {
+    this.screenWidthDp = screenWidthDp;
+    this.screenHeightDp = screenHeightDp;
   }
 
   // This function checks if interaction between the spaceship and shavermas /
@@ -69,17 +77,30 @@ public class Map {
 
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
-  public void updateScreenState() {
-    // TODO
-  }
+  public void updateScreenCoordinates(float pixelDensity) {
+    spaceship.setScreenX(screenWidthDp / 2);
+    spaceship.setScreenY(screenHeightDp / 2);
 
-  // This function takes spaceship's position as a center of the current shown
-  // part of the map and updates all the objects coordinates with necessary
-  // offsets. Coordinates of the objects, which won't be shown on the screen,
-  // can become negative or too big for the screen, and that's expected
-  // behaviour (MapView will draw only objects with normal coordinates).
-  public void moveScreenCoordinates() {
-    // TODO
+    float offsetX = spaceship.getScreenX() - spaceship.getInternalX();
+    float offsetY = spaceship.getScreenY() - spaceship.getInternalY();
+
+    for (Planet planet : planets) {
+      planet.setScreenX(pixelDensity * (planet.getInternalX() + offsetX));
+      planet.setScreenY(pixelDensity * (planet.getInternalY() + offsetY));
+    }
+
+    for (BlackHole blackHole : blackHoles) {
+      blackHole.setScreenX(pixelDensity * (blackHole.getInternalX() + offsetX));
+      blackHole.setScreenY(pixelDensity * (blackHole.getInternalY() + offsetY));
+    }
+
+    for (Shaverma shaverma : shavermas) {
+      shaverma.setScreenX(pixelDensity * (shaverma.getInternalX() + offsetX));
+      shaverma.setScreenY(pixelDensity * (shaverma.getInternalY() + offsetY));
+    }
+
+    spaceship.setScreenX(pixelDensity * spaceship.getScreenX());
+    spaceship.setScreenY(pixelDensity * spaceship.getScreenY());
   }
 
   // This function updates spaceship internalX, internalY coordinates

@@ -14,6 +14,6 @@ public class BlackHole extends GameObject {
   @Override
   public void draw(Canvas canvas, Paint painter) {
     painter.setColor(Color.BLACK);
-    canvas.drawCircle(screenX, screenY, screenRadius, painter);
+    canvas.drawCircle(screenX, screenY, radius, painter);
   }
 }

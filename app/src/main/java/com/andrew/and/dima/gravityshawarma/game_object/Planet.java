@@ -17,6 +17,6 @@ public class Planet extends GameObject {
   @Override
   public void draw(Canvas canvas, Paint painter) {
     painter.setColor(Color.GREEN);
-    canvas.drawCircle(screenX, screenY, screenRadius, painter);
+    canvas.drawCircle(screenX, screenY, radius, painter);
   }
 }

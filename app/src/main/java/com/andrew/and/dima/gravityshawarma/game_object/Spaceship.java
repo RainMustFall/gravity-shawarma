@@ -18,7 +18,7 @@ public class Spaceship extends GameObject {
   @Override
   public void draw(Canvas canvas, Paint painter) {
     painter.setColor(Color.BLUE);
-    canvas.drawCircle(screenX, screenY, screenRadius, painter);
+    canvas.drawCircle(screenX, screenY, radius, painter);
   }
 
   public void addAccelerationToMoveVector(FloatVector acceleration) {

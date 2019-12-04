@@ -44,22 +44,46 @@ public class MapViewActivity extends AppCompatActivity {
         });
       }
     };
-    mapViewUpdateTimer.scheduleAtFixedRate(timerTask, 0, 50);
+    mapViewUpdateTimer.scheduleAtFixedRate(timerTask, 0, 25);
   }
 
   private void onTimerEvent() {
+    mapView.updateSize();
     map.updateInternalState(false);
-    map.updateScreenState();
-    map.moveScreenCoordinates();
+    map.setScreenSize(mapView.getWidthDp(), mapView.getHeightDp());
+    map.updateScreenCoordinates(mapView.getPixelDensity());
     mapView.invalidate();
   }
 
   class MapView extends View {
     private Paint painter;
 
+    private float pixelDensity;
+    private float widthDp;
+    private float heightDp;
+
     public MapView(Context context) {
       super(context);
       painter = new Paint();
+      updateSize();
+    }
+
+    public void updateSize() {
+      pixelDensity = getResources().getDisplayMetrics().density;
+      widthDp = getWidth() / pixelDensity;
+      heightDp = getHeight() / pixelDensity;
+    }
+
+    public float getPixelDensity() {
+      return pixelDensity;
+    }
+
+    public float getWidthDp() {
+      return widthDp;
+    }
+
+    public float getHeightDp() {
+      return heightDp;
     }
 
     @Override

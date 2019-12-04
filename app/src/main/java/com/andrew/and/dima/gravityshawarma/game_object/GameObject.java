@@ -15,11 +15,10 @@ public abstract class GameObject {
   protected float internalX;
   protected float internalY;
 
-  // Internal internalRadius of the object. Here we still assume that all the
-  // objects
+  // Radius of the object. Here we still assume that all the objects
   // are circular. This value doesn't change after initializing in the
   // constructor.
-  protected float internalRadius;
+  protected float radius;
 
   // Physical mass of the object (to count gravity force in the game).
   // Initialized once in the constructor. Can be equal to zero for some
@@ -30,28 +29,25 @@ public abstract class GameObject {
   // and etc). They are updated by MapView.
   protected float screenX;
   protected float screenY;
-  protected float screenRadius;
 
   // Constructor initializes constant variables with passed values and
   // "screen" variables with zeros. Screen variables MUST BE updated by
   // MapView before you try to draw the object. You can use
   // updateScreenCoordinates method for that.
-  public GameObject(float internalX, float internalY,
-                    float internalRadius, float mass) {
+  public GameObject(float internalX, float internalY, float radius,
+                    float mass) {
     this.internalX = internalX;
     this.internalY = internalY;
-    this.internalRadius = internalRadius;
+    this.radius = radius;
     this.mass = mass;
     this.screenX = 0;
     this.screenY = 0;
   }
 
   // This method is called by MapView periodically.
-  public void updateScreenCoordinates(float screenX, float screenY,
-                                      float screenRadius) {
+  public void updateScreenCoordinates(float screenX, float screenY) {
     this.screenX = screenX;
     this.screenY = screenY;
-    this.screenRadius = screenRadius;
   }
 
   // This function checks if the current object intersects with the passed
@@ -59,12 +55,12 @@ public abstract class GameObject {
   public boolean touches(GameObject anotherObject) {
     float dx = internalX - anotherObject.internalX;
     float dy = internalY - anotherObject.internalY;
-    float dr = internalRadius + anotherObject.internalRadius;
+    float dr = radius + anotherObject.radius;
     return ((dx * dx + dy * dy) <= dr * dr);
   }
 
   // Returns Force vector to the object, located by passed coordinates. By
-  // default uses internal coordinates and internalRadius values for that, but
+  // default uses internal coordinates and radius values for that, but
   // this behaviour can be overridden in derived classes.
   public FloatVector calculateForceVector(float anotherObjectX,
                                           float anotherObjectY) {
@@ -93,8 +89,8 @@ public abstract class GameObject {
     return internalY;
   }
 
-  public float getInternalRadius() {
-    return internalRadius;
+  public float getRadius() {
+    return radius;
   }
 
   public float getScreenX() {
@@ -103,5 +99,13 @@ public abstract class GameObject {
 
   public float getScreenY() {
     return screenY;
+  }
+
+  public void setScreenX(float screenX) {
+    this.screenX = screenX;
+  }
+
+  public void setScreenY(float screenY) {
+    this.screenY = screenY;
   }
 }
