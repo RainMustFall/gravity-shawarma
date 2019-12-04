@@ -112,8 +112,22 @@ public class Map {
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
   public void updateScreenCoordinates(float pixelDensity) {
-    spaceship.setScreenX(screenWidthDp / 2);
-    spaceship.setScreenY(screenHeightDp / 2);
+    float halfOfScreenWidthDp = screenWidthDp / 2;
+    float halfOfScreenHeightDp = screenHeightDp / 2;
+
+    if (spaceship.getInternalX() - halfOfScreenWidthDp > 0 &&
+        spaceship.getInternalX() + halfOfScreenWidthDp < MAP_WIDTH) {
+      spaceship.setScreenX(halfOfScreenWidthDp);
+    } else {
+      spaceship.setScreenX(spaceship.getInternalX());
+    }
+
+    if (spaceship.getInternalY() - halfOfScreenHeightDp > 0 &&
+        spaceship.getInternalY() + halfOfScreenHeightDp < MAP_HEIGHT) {
+      spaceship.setScreenY(halfOfScreenHeightDp);
+    } else {
+      spaceship.setScreenY(spaceship.getInternalY());
+    }
 
     float offsetX = spaceship.getScreenX() - spaceship.getInternalX();
     float offsetY = spaceship.getScreenY() - spaceship.getInternalY();
