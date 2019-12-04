@@ -1,7 +1,8 @@
 package com.andrew.and.dima.gravityshawarma.utils;
 
 public class FloatVector {
-  public float x, y;
+  public float x;
+  public float y;
 
   public FloatVector() {
     x = 0;
