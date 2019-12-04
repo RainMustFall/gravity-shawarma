@@ -21,6 +21,9 @@ public class Map {
   private LinkedList<Shaverma> shavermas;
   private ArrayList<BlackHole> blackHoles;
 
+  private final float MAP_WIDTH = 2000;
+  private final float MAP_HEIGHT = 1200;
+
   private float screenWidthDp = 0;
   private float screenHeightDp = 0;
 
@@ -31,6 +34,7 @@ public class Map {
     randomGenerator = new Random();
 
     planets = new ArrayList<>(Arrays.asList(
+        new Planet(700, 200, 500),
         new Planet(700, 500, 500),
         new Planet(800, 600, 500),
         new Planet(900, 700, 500),
@@ -40,6 +44,8 @@ public class Map {
         new Planet(1300, 250, 500),
         new Planet(1400, 400, 500),
         new Planet(1500, 500, 1000),
+        new Planet(1700, 500, 700),
+        new Planet(1900, 500, 700),
         new Planet(400, 500, 1000),
         new Planet(400, 700, 500),
         new Planet(400, 800, 1000),
@@ -75,6 +81,34 @@ public class Map {
     spaceship.move();
   }
 
+  // This function updates spaceship internalX, internalY coordinates
+  // according to its move vector and current acceleration.
+  private void updateSpaceshipState(boolean accelerationOn) {
+    FloatVector deltaVector = new FloatVector();
+
+    for (Planet planet : planets) {
+      deltaVector.add(planet.calculateForceVector(
+          spaceship.getInternalX(), spaceship.getInternalY()));
+    }
+
+    if (accelerationOn) {
+      spaceship.setAccelerated(true);
+      // TODO: improve this logic. Reduce the fuel of the spaceship, etc.
+      spaceship.addAccelerationToMoveVector(new FloatVector(1, 1));
+    } else {
+      spaceship.setAccelerated(false);
+    }
+
+    spaceship.addAccelerationToMoveVector(deltaVector);
+
+    if (spaceship.getInternalX() <= 0 ||
+        spaceship.getInternalX() >= MAP_WIDTH ||
+        spaceship.getInternalY() <= 0 ||
+        spaceship.getInternalY() >= MAP_HEIGHT) {
+      finishGame(false);
+    }
+  }
+
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
   public void updateScreenCoordinates(float pixelDensity) {
@@ -101,27 +135,6 @@ public class Map {
 
     spaceship.setScreenX(pixelDensity * spaceship.getScreenX());
     spaceship.setScreenY(pixelDensity * spaceship.getScreenY());
-  }
-
-  // This function updates spaceship internalX, internalY coordinates
-  // according to its move vector and current acceleration.
-  private void updateSpaceshipState(boolean accelerationOn) {
-    FloatVector deltaVector = new FloatVector();
-
-    for (Planet planet : planets) {
-      deltaVector.add(planet.calculateForceVector(
-          spaceship.getInternalX(), spaceship.getInternalY()));
-    }
-
-    if (accelerationOn) {
-      spaceship.setAccelerated(true);
-      // TODO: improve this logic. Reduce the fuel of the spaceship, etc.
-      spaceship.addAccelerationToMoveVector(new FloatVector(1, 1));
-    } else {
-      spaceship.setAccelerated(false);
-    }
-
-    spaceship.addAccelerationToMoveVector(deltaVector);
   }
 
   private void collectShavermas() {
@@ -155,8 +168,8 @@ public class Map {
   private void interactWithPlanets() {
     for (Planet planet : planets) {
       if (spaceship.touches(planet)) {
-        finishGame(false);
-        break;
+//        finishGame(false);
+//        break;
       }
     }
   }

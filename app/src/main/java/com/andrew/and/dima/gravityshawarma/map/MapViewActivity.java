@@ -54,6 +54,10 @@ public class MapViewActivity extends AppCompatActivity {
     map.setScreenSize(mapView.getWidthDp(), mapView.getHeightDp());
     map.updateScreenCoordinates(mapView.getPixelDensity());
     mapView.invalidate();
+
+    if (map.hasGameFinished()) {
+      finish();
+    }
   }
 
   class MapView extends View {
