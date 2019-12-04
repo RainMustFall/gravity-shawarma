@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Random;
 
 import com.andrew.and.dima.gravityshawarma.game_object.BlackHole;
+import com.andrew.and.dima.gravityshawarma.game_object.GameObject;
 import com.andrew.and.dima.gravityshawarma.game_object.Planet;
 import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
 import com.andrew.and.dima.gravityshawarma.game_object.Spaceship;
+import com.andrew.and.dima.gravityshawarma.utils.Constants;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 
 public class Map {
@@ -26,6 +28,9 @@ public class Map {
 
   private float screenWidthDp = 0;
   private float screenHeightDp = 0;
+
+  private float offsetX;
+  private float offsetY;
 
   private boolean finished = false;
   private boolean finishedState;
@@ -59,7 +64,7 @@ public class Map {
 
     blackHoles = new ArrayList<>(Arrays.asList(
         new BlackHole(950, 400),
-        new BlackHole(1150, 400)
+        new BlackHole(1550, 500)
     ));
 
     spaceship = new Spaceship(900, 1000);
@@ -68,6 +73,11 @@ public class Map {
   public void setScreenSize(float screenWidthDp, float screenHeightDp) {
     this.screenWidthDp = screenWidthDp;
     this.screenHeightDp = screenHeightDp;
+  }
+
+  public void initOffsetCoordinates(float widthDp, float heightDp) {
+    offsetX = widthDp / 2 - spaceship.getInternalX();
+    offsetY = heightDp / 2 - spaceship.getInternalY();
   }
 
   // This function checks if interaction between the spaceship and shavermas /
@@ -112,43 +122,13 @@ public class Map {
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
   public void updateScreenCoordinates(float pixelDensity) {
-    float halfOfScreenWidthDp = screenWidthDp / 2;
-    float halfOfScreenHeightDp = screenHeightDp / 2;
+    offsetX += spaceship.getMoveX() * Constants.MAP_OFFSET_COEFFICIENT;
+    offsetY += spaceship.getMoveY() * Constants.MAP_OFFSET_COEFFICIENT;
 
-    if (spaceship.getInternalX() - halfOfScreenWidthDp > 0 &&
-        spaceship.getInternalX() + halfOfScreenWidthDp < MAP_WIDTH) {
-      spaceship.setScreenX(halfOfScreenWidthDp);
-    } else {
-      spaceship.setScreenX(spaceship.getInternalX());
-    }
-
-    if (spaceship.getInternalY() - halfOfScreenHeightDp > 0 &&
-        spaceship.getInternalY() + halfOfScreenHeightDp < MAP_HEIGHT) {
-      spaceship.setScreenY(halfOfScreenHeightDp);
-    } else {
-      spaceship.setScreenY(spaceship.getInternalY());
-    }
-
-    float offsetX = spaceship.getScreenX() - spaceship.getInternalX();
-    float offsetY = spaceship.getScreenY() - spaceship.getInternalY();
-
-    for (Planet planet : planets) {
-      planet.setScreenX(pixelDensity * (planet.getInternalX() + offsetX));
-      planet.setScreenY(pixelDensity * (planet.getInternalY() + offsetY));
-    }
-
-    for (BlackHole blackHole : blackHoles) {
-      blackHole.setScreenX(pixelDensity * (blackHole.getInternalX() + offsetX));
-      blackHole.setScreenY(pixelDensity * (blackHole.getInternalY() + offsetY));
-    }
-
-    for (Shaverma shaverma : shavermas) {
-      shaverma.setScreenX(pixelDensity * (shaverma.getInternalX() + offsetX));
-      shaverma.setScreenY(pixelDensity * (shaverma.getInternalY() + offsetY));
-    }
-
-    spaceship.setScreenX(pixelDensity * spaceship.getScreenX());
-    spaceship.setScreenY(pixelDensity * spaceship.getScreenY());
+    setScreenCoordinates(planets, pixelDensity);
+    setScreenCoordinates(blackHoles, pixelDensity);
+    setScreenCoordinates(shavermas, pixelDensity);
+    setScreenCoordinates(spaceship, pixelDensity);
   }
 
   private void collectShavermas() {
@@ -162,20 +142,39 @@ public class Map {
     }
   }
 
+  private void setScreenCoordinates(List<? extends GameObject> objects, float pixelDensity) {
+    for (GameObject object : objects) {
+      setScreenCoordinates(object, pixelDensity);
+    }
+  }
+
+  private void setScreenCoordinates(GameObject object, float pixelDensity) {
+      object.setScreenX(pixelDensity * (object.getInternalX() + offsetX));
+      object.setScreenY(pixelDensity * (object.getInternalY() + offsetY));
+      object.setScreenRadius(pixelDensity * object.getInternalRadius());
+  }
+
   private void interactWithBlackHoles() {
+    boolean touchedHole = false;
     for (int i = 0; i < blackHoles.size(); ++i) {
-      if (spaceship.touches(blackHoles.get(i))) {
+      touchedHole |= spaceship.touches(blackHoles.get(i));
+      if (touchedHole && !spaceship.hasAlreadyTeleported()) {
         // TODO: improve random logic.
-        int nextBlackHoleIndex =
-            randomGenerator.nextInt(blackHoles.size());
-        spaceship.teleport(
-            blackHoles.get(i).getInternalX(),
-            blackHoles.get(i).getInternalY(),
-            blackHoles.get(nextBlackHoleIndex).getInternalX(),
-            blackHoles.get(nextBlackHoleIndex).getInternalY());
+        int nextBlackHoleIndex = randomGenerator.nextInt(blackHoles.size());
+
+        float teleportX = blackHoles.get(nextBlackHoleIndex).getInternalX()
+                - blackHoles.get(i).getInternalX();
+        float teleportY = blackHoles.get(nextBlackHoleIndex).getInternalY()
+                - blackHoles.get(i).getInternalY();
+
+        spaceship.teleport(teleportX, teleportY);
+
+        offsetX -= teleportX;
+        offsetY -= teleportY;
         break;
       }
     }
+    spaceship.setAlreadyTeleported(touchedHole);
   }
 
   private void interactWithPlanets() {

@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import com.andrew.and.dima.gravityshawarma.game_object.BlackHole;
 import com.andrew.and.dima.gravityshawarma.game_object.Planet;
@@ -32,6 +33,13 @@ public class MapViewActivity extends AppCompatActivity {
     setContentView(mapView);
 
     map = new Map();
+
+    mapView.post(new Runnable() {
+      @Override
+      public void run() {
+        map.initOffsetCoordinates(mapView.getWidthDp(), mapView.getHeightDp());
+      }
+    });
 
     mapViewUpdateTimer = new Timer();
     TimerTask timerTask = new TimerTask() {

@@ -14,6 +14,6 @@ public class Shaverma extends GameObject {
   @Override
   public void draw(Canvas canvas, Paint painter) {
     painter.setColor(Color.RED);
-    canvas.drawCircle(screenX, screenY, radius, painter);
+    canvas.drawCircle(screenX, screenY, screenRadius, painter);
   }
 }

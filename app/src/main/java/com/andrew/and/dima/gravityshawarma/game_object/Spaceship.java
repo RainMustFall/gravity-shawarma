@@ -13,6 +13,7 @@ public class Spaceship extends GameObject {
   // The color is now used to represent the accelerated and non-accelerated
   // states of the spaceship. It will be later replaced with the textures.
   protected int spaceshipColor = Color.BLUE;
+  protected boolean alreadyTeleported = false;
 
   public Spaceship(float internalX, float internalY) {
     super(internalX, internalY, Constants.SPACESHIP_RADIUS, 0);
@@ -22,7 +23,7 @@ public class Spaceship extends GameObject {
   @Override
   public void draw(Canvas canvas, Paint painter) {
     painter.setColor(spaceshipColor);
-    canvas.drawCircle(screenX, screenY, radius, painter);
+    canvas.drawCircle(screenX, screenY, screenRadius, painter);
   }
 
   public void addAccelerationToMoveVector(FloatVector acceleration) {
@@ -34,10 +35,9 @@ public class Spaceship extends GameObject {
     internalY += moveVector.y;
   }
 
-  public void teleport(float currentBlackHoleX, float currentBlackHoleY,
-                       float nextBlackHoleX, float nextBlackHoleY) {
-    internalX += nextBlackHoleX - currentBlackHoleX;
-    internalY -= nextBlackHoleY - currentBlackHoleY;
+  public void teleport(float teleportX, float teleportY) {
+    internalX += teleportX;
+    internalY += teleportY;
   }
 
   public void setAccelerated(boolean state) {
@@ -46,5 +46,21 @@ public class Spaceship extends GameObject {
     } else {
       spaceshipColor = Color.BLUE;
     }
+  }
+
+  public void setAlreadyTeleported(boolean alreadyTeleported) {
+    this.alreadyTeleported = alreadyTeleported;
+  }
+
+  public boolean hasAlreadyTeleported() {
+    return alreadyTeleported;
+  }
+
+  public float getMoveX() {
+    return moveVector.x;
+  }
+
+  public float getMoveY() {
+    return moveVector.y;
   }
 }

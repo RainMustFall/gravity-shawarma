@@ -18,7 +18,7 @@ public abstract class GameObject {
   // Radius of the object. Here we still assume that all the objects
   // are circular. This value doesn't change after initializing in the
   // constructor.
-  protected float radius;
+  protected float internalRadius;
 
   // Physical mass of the object (to count gravity force in the game).
   // Initialized once in the constructor. Can be equal to zero for some
@@ -29,16 +29,17 @@ public abstract class GameObject {
   // and etc). They are updated by MapView.
   protected float screenX;
   protected float screenY;
+  protected float screenRadius;
 
   // Constructor initializes constant variables with passed values and
   // "screen" variables with zeros. Screen variables MUST BE updated by
   // MapView before you try to draw the object. You can use
   // updateScreenCoordinates method for that.
-  public GameObject(float internalX, float internalY, float radius,
+  public GameObject(float internalX, float internalY, float internalRadius,
                     float mass) {
     this.internalX = internalX;
     this.internalY = internalY;
-    this.radius = radius;
+    this.internalRadius = internalRadius;
     this.mass = mass;
     this.screenX = 0;
     this.screenY = 0;
@@ -55,12 +56,12 @@ public abstract class GameObject {
   public boolean touches(GameObject anotherObject) {
     float dx = internalX - anotherObject.internalX;
     float dy = internalY - anotherObject.internalY;
-    float dr = radius + anotherObject.radius;
+    float dr = internalRadius + anotherObject.internalRadius;
     return ((dx * dx + dy * dy) <= dr * dr);
   }
 
   // Returns Force vector to the object, located by passed coordinates. By
-  // default uses internal coordinates and radius values for that, but
+  // default uses internal coordinates and internalRadius values for that, but
   // this behaviour can be overridden in derived classes.
   public FloatVector calculateForceVector(float anotherObjectX,
                                           float anotherObjectY) {
@@ -89,8 +90,8 @@ public abstract class GameObject {
     return internalY;
   }
 
-  public float getRadius() {
-    return radius;
+  public float getInternalRadius() {
+    return internalRadius;
   }
 
   public float getScreenX() {
@@ -101,11 +102,19 @@ public abstract class GameObject {
     return screenY;
   }
 
+  public float getScreenRadius() {
+    return screenRadius;
+  }
+
   public void setScreenX(float screenX) {
     this.screenX = screenX;
   }
 
   public void setScreenY(float screenY) {
     this.screenY = screenY;
+  }
+
+  public void setScreenRadius(float screenRadius) {
+    this.screenRadius = screenRadius;
   }
 }
