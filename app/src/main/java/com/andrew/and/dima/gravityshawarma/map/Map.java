@@ -114,8 +114,11 @@ public class Map {
     }
 
     if (accelerationOn) {
+      spaceship.setAccelerated(true);
       // TODO: improve this logic. Reduce the fuel of the spaceship, etc.
       spaceship.addAccelerationToMoveVector(new FloatVector(1, 1));
+    } else {
+      spaceship.setAccelerated(false);
     }
 
     spaceship.addAccelerationToMoveVector(deltaVector);

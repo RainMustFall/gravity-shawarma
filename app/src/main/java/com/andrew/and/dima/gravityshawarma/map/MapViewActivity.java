@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.andrew.and.dima.gravityshawarma.game_object.BlackHole;
@@ -49,7 +50,7 @@ public class MapViewActivity extends AppCompatActivity {
 
   private void onTimerEvent() {
     mapView.updateSize();
-    map.updateInternalState(false);
+    map.updateInternalState(mapView.isTouched());
     map.setScreenSize(mapView.getWidthDp(), mapView.getHeightDp());
     map.updateScreenCoordinates(mapView.getPixelDensity());
     mapView.invalidate();
@@ -61,6 +62,8 @@ public class MapViewActivity extends AppCompatActivity {
     private float pixelDensity;
     private float widthDp;
     private float heightDp;
+
+    private boolean isTouched = false;
 
     public MapView(Context context) {
       super(context);
@@ -86,12 +89,13 @@ public class MapViewActivity extends AppCompatActivity {
       return heightDp;
     }
 
+    public boolean isTouched() {
+      return isTouched;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
       canvas.drawColor(Color.WHITE);
-
-      // TODO: draw only objects, which coordinates are inside the screen
-      // system of the coordinates (positive, not bigger than the screen size).
 
       for (Planet planet : map.getPlanetsList()) {
         planet.draw(canvas, painter);
@@ -106,6 +110,17 @@ public class MapViewActivity extends AppCompatActivity {
       }
 
       map.getSpaceship().draw(canvas, painter);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+      if (event.getAction() == MotionEvent.ACTION_DOWN) {
+        isTouched = true;
+        performClick();
+      } else {
+        isTouched = false;
+      }
+      return true;
     }
   }
 }

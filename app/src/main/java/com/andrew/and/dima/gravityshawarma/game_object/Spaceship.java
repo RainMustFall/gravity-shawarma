@@ -10,6 +10,10 @@ import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 public class Spaceship extends GameObject {
   protected FloatVector moveVector;
 
+  // The color is now used to represent the accelerated and non-accelerated
+  // states of the spaceship. It will be later replaced with the textures.
+  protected int spaceshipColor = Color.BLUE;
+
   public Spaceship(float internalX, float internalY) {
     super(internalX, internalY, Constants.SPACESHIP_RADIUS, 0);
     moveVector = new FloatVector(0, 0);
@@ -17,7 +21,7 @@ public class Spaceship extends GameObject {
 
   @Override
   public void draw(Canvas canvas, Paint painter) {
-    painter.setColor(Color.BLUE);
+    painter.setColor(spaceshipColor);
     canvas.drawCircle(screenX, screenY, radius, painter);
   }
 
@@ -34,5 +38,13 @@ public class Spaceship extends GameObject {
                        float nextBlackHoleX, float nextBlackHoleY) {
     internalX += nextBlackHoleX - currentBlackHoleX;
     internalY += nextBlackHoleY - currentBlackHoleY;
+  }
+
+  public void setAccelerated(boolean state) {
+    if (state) {
+      spaceshipColor = Color.YELLOW;
+    } else {
+      spaceshipColor = Color.BLUE;
+    }
   }
 }
