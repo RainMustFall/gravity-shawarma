@@ -14,6 +14,7 @@ import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
 import com.andrew.and.dima.gravityshawarma.game_object.Spaceship;
 import com.andrew.and.dima.gravityshawarma.utils.Constants;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
+import com.andrew.and.dima.gravityshawarma.utils.Utils;
 
 public class Map {
   private Random randomGenerator;
@@ -36,10 +37,12 @@ public class Map {
   private boolean finished = false;
   private boolean finishedState;
 
+  FloatVector deltaVector = new FloatVector();
+
   public Map() {
     randomGenerator = new Random();
 
-    planets = new ArrayList<>(Arrays.asList(
+    planets = new ArrayList<>(/*Arrays.asList(
             new Planet(700, 200, 500),
             new Planet(700, 500, 500),
             new Planet(800, 600, 500),
@@ -56,7 +59,7 @@ public class Map {
             new Planet(400, 700, 500),
             new Planet(400, 800, 1000),
             new Planet(400, 1000, 1000)
-    ));
+    )*/);
 
     shavermas = new LinkedList<>(Arrays.asList(
             new Shaverma(510, 150),
@@ -99,7 +102,7 @@ public class Map {
   // This function updates spaceship internalX, internalY coordinates
   // according to its move vector and current acceleration.
   private void updateSpaceshipState(FloatVector acceleration) {
-    FloatVector deltaVector = new FloatVector(acceleration);
+    deltaVector = new FloatVector(acceleration);
 
     if (!acceleration.isZero()) {
       spaceship.setAccelerated(true);
@@ -115,10 +118,10 @@ public class Map {
 
     spaceship.addAccelerationToMoveVector(deltaVector);
 
-    if (spaceship.getScreenX() < 0 ||
-            spaceship.getScreenX() > screenWidthDp * pixelDensity ||
-            spaceship.getScreenY() < 0 ||
-            spaceship.getScreenY() > screenHeightDp * pixelDensity) {
+    if (spaceship.getInternalX() < 0 ||
+            spaceship.getInternalX() > MAP_WIDTH ||
+            spaceship.getInternalY() < 0 ||
+            spaceship.getInternalY() > MAP_HEIGHT) {
       finishGame(false);
     }
   }
@@ -126,6 +129,30 @@ public class Map {
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
   public void updateScreenCoordinates() {
+    float halfOfScreenWidthDp = screenWidthDp / 2;
+    float halfOfScreenHeightDp = screenHeightDp / 2;
+
+    if (spaceship.getInternalX() - halfOfScreenWidthDp > 0 &&
+            spaceship.getInternalX() + halfOfScreenWidthDp < MAP_WIDTH) {
+      spaceship.setScreenX(halfOfScreenWidthDp);
+    } else if (spaceship.getInternalX() - halfOfScreenWidthDp < 0) {
+      spaceship.setScreenX(spaceship.getInternalX());
+    } else {
+      spaceship.setScreenX(screenWidthDp - MAP_WIDTH + spaceship.getInternalX());
+    }
+
+    if (spaceship.getInternalY() - halfOfScreenHeightDp > 0 &&
+            spaceship.getInternalY() + halfOfScreenHeightDp < MAP_HEIGHT) {
+      spaceship.setScreenY(halfOfScreenHeightDp);
+    } else if (spaceship.getInternalY() - halfOfScreenHeightDp < 0) {
+      spaceship.setScreenY(spaceship.getInternalY());
+    } else {
+      spaceship.setScreenY(screenHeightDp - MAP_HEIGHT + spaceship.getInternalY());
+    }
+
+    offsetX = spaceship.getScreenX() - spaceship.getInternalX();
+    offsetY = spaceship.getScreenY() - spaceship.getInternalY();
+
     offsetX += spaceship.getMoveX() * Constants.MAP_OFFSET_COEFFICIENT;
     offsetY += spaceship.getMoveY() * Constants.MAP_OFFSET_COEFFICIENT;
 
@@ -164,7 +191,7 @@ public class Map {
       touchedHole |= spaceship.touches(blackHoles.get(i));
       if (touchedHole && !spaceship.hasAlreadyTeleported()) {
         // TODO: improve random logic.
-        int nextBlackHoleIndex = randomGenerator.nextInt(blackHoles.size());
+        int nextBlackHoleIndex = Utils.getRandomExceptValue(blackHoles.size(), i, randomGenerator);
 
         float teleportX = blackHoles.get(nextBlackHoleIndex).getInternalX()
                 - blackHoles.get(i).getInternalX();
