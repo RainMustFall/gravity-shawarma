@@ -14,6 +14,7 @@ import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
 import com.andrew.and.dima.gravityshawarma.game_object.Spaceship;
 import com.andrew.and.dima.gravityshawarma.utils.Constants;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
+import com.andrew.and.dima.gravityshawarma.utils.OffsetGenerator;
 import com.andrew.and.dima.gravityshawarma.utils.Utils;
 
 public class Map {
@@ -34,6 +35,9 @@ public class Map {
   private float offsetX;
   private float offsetY;
 
+  private OffsetGenerator xGenerator;
+  private OffsetGenerator yGenerator;
+
   private boolean finished = false;
   private boolean finishedState;
 
@@ -52,7 +56,6 @@ public class Map {
             new Planet(1200, 400, 500),
             new Planet(1300, 250, 500),
             new Planet(1400, 400, 500),
-            new Planet(1500, 500, 1000),
             new Planet(1700, 500, 700),
             new Planet(1900, 500, 700),
             new Planet(400, 500, 1000),
@@ -68,10 +71,10 @@ public class Map {
 
     blackHoles = new ArrayList<>(Arrays.asList(
             new BlackHole(950, 400),
-            new BlackHole(1550, 500)
+            new BlackHole(1250, 500)
     ));
 
-    spaceship = new Spaceship(900, 1000);
+    spaceship = new Spaceship(900, 600);
   }
 
   public void setPixelDensity(float pixelDensity) {
@@ -83,9 +86,16 @@ public class Map {
     this.screenHeightDp = screenHeightDp;
   }
 
-  public void initOffsetCoordinates(float widthDp, float heightDp) {
-    offsetX = widthDp / 2 - spaceship.getInternalX();
-    offsetY = heightDp / 2 - spaceship.getInternalY();
+  public void initOffsetGenerators(float widthDp, float heightDp) {
+    xGenerator = new OffsetGenerator(
+            new FloatVector(0, 0),
+            new FloatVector(MAP_WIDTH, widthDp),
+            new FloatVector(spaceship.getInternalX(), widthDp / 2));
+
+    yGenerator = new OffsetGenerator(
+            new FloatVector(0, 0),
+            new FloatVector(MAP_HEIGHT, heightDp),
+            new FloatVector(spaceship.getInternalY(), heightDp / 2));
   }
 
   // This function checks if interaction between the spaceship and shavermas /
@@ -129,32 +139,12 @@ public class Map {
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
   public void updateScreenCoordinates() {
-    float halfOfScreenWidthDp = screenWidthDp / 2;
-    float halfOfScreenHeightDp = screenHeightDp / 2;
-
-    if (spaceship.getInternalX() - halfOfScreenWidthDp > 0 &&
-            spaceship.getInternalX() + halfOfScreenWidthDp < MAP_WIDTH) {
-      spaceship.setScreenX(halfOfScreenWidthDp);
-    } else if (spaceship.getInternalX() - halfOfScreenWidthDp < 0) {
-      spaceship.setScreenX(spaceship.getInternalX());
-    } else {
-      spaceship.setScreenX(screenWidthDp - MAP_WIDTH + spaceship.getInternalX());
+    if (xGenerator == null) {
+      return;
     }
 
-    if (spaceship.getInternalY() - halfOfScreenHeightDp > 0 &&
-            spaceship.getInternalY() + halfOfScreenHeightDp < MAP_HEIGHT) {
-      spaceship.setScreenY(halfOfScreenHeightDp);
-    } else if (spaceship.getInternalY() - halfOfScreenHeightDp < 0) {
-      spaceship.setScreenY(spaceship.getInternalY());
-    } else {
-      spaceship.setScreenY(screenHeightDp - MAP_HEIGHT + spaceship.getInternalY());
-    }
-
-    offsetX = spaceship.getScreenX() - spaceship.getInternalX();
-    offsetY = spaceship.getScreenY() - spaceship.getInternalY();
-
-    offsetX += spaceship.getMoveX() * Constants.MAP_OFFSET_COEFFICIENT;
-    offsetY += spaceship.getMoveY() * Constants.MAP_OFFSET_COEFFICIENT;
+    offsetX = xGenerator.getFunction(spaceship.getInternalX()) - spaceship.getInternalX();
+    offsetY = yGenerator.getFunction(spaceship.getInternalY()) - spaceship.getInternalY();
 
     setScreenCoordinates(planets);
     setScreenCoordinates(blackHoles);
@@ -200,8 +190,13 @@ public class Map {
 
         spaceship.teleport(teleportX, teleportY);
 
-        offsetX -= teleportX;
-        offsetY -= teleportY;
+        xGenerator.setNewBreak(
+                spaceship.getInternalX(),
+                spaceship.getScreenX() / pixelDensity);
+
+        yGenerator.setNewBreak(
+                spaceship.getInternalY(),
+                spaceship.getScreenY() / pixelDensity);
         break;
       }
     }
