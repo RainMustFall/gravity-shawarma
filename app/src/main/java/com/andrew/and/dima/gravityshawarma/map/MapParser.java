@@ -2,7 +2,6 @@ package com.andrew.and.dima.gravityshawarma.map;
 
 import android.content.Context;
 
-import com.andrew.and.dima.gravityshawarma.R;
 import com.andrew.and.dima.gravityshawarma.game_object.BlackHole;
 import com.andrew.and.dima.gravityshawarma.game_object.Planet;
 import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
@@ -24,9 +23,8 @@ public class MapParser {
   private float mapWidth;
   private float mapHeight;
 
-  public MapParser(Integer mapNumber, Context context) {
-    InputStream inputStream =
-        context.getResources().openRawResource(R.raw.map0);
+  public MapParser(int mapId, Context context) {
+    InputStream inputStream = context.getResources().openRawResource(mapId);
     String mapDataString = new Scanner(inputStream).useDelimiter("\\A").next();
 
     Gson gson = new Gson();

@@ -17,6 +17,7 @@ import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
 import com.andrew.and.dima.gravityshawarma.utils.Constants;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,8 +35,11 @@ public class MapViewActivity extends AppCompatActivity {
     mapView = new MapView(this);
     setContentView(mapView);
 
-
-    map = new Map(0, this);
+    Integer mapNumber =
+        Objects.requireNonNull(getIntent().getExtras()).getInt("mapNumber");
+    int mapId = getResources().getIdentifier("map" + mapNumber.toString(),
+        "raw", getPackageName());
+    map = new Map(mapId, this);
 
     mapView.post(new Runnable() {
       @Override

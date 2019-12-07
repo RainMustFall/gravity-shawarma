@@ -2,7 +2,6 @@ package com.andrew.and.dima.gravityshawarma.map;
 
 import android.content.Context;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,10 +41,10 @@ public class Map {
 
   FloatVector deltaVector = new FloatVector();
 
-  public Map(Integer mapNumber, Context context) {
+  public Map(int mapId, Context context) {
     randomGenerator = new Random();
 
-    MapParser mapParser = new MapParser(mapNumber, context);
+    MapParser mapParser = new MapParser(mapId, context);
     spaceship = mapParser.getSpaceship();
     planets = mapParser.getPlanets();
     shavermas = mapParser.getShavermas();

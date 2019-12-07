@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void onClick(View v) {
         Intent intent = new Intent(MainActivity.this, MapViewActivity.class);
+        intent.putExtra("mapNumber", 0);
         startActivityForResult(intent, START_LEVEL);
       }
     });
