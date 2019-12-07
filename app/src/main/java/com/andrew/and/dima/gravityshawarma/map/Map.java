@@ -1,7 +1,9 @@
 package com.andrew.and.dima.gravityshawarma.map;
 
+import android.content.Context;
+
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,8 +26,8 @@ public class Map {
   private LinkedList<Shaverma> shavermas;
   private ArrayList<BlackHole> blackHoles;
 
-  private final float MAP_WIDTH = 2000;
-  private final float MAP_HEIGHT = 1200;
+  private float mapWidth;
+  private float mapHeight;
 
   private float pixelDensity = 0;
 
@@ -40,39 +42,16 @@ public class Map {
 
   FloatVector deltaVector = new FloatVector();
 
-  public Map() {
+  public Map(Integer mapNumber, Context context) {
     randomGenerator = new Random();
 
-    planets = new ArrayList<>(/*Arrays.asList(
-            new Planet(700, 200, 500),
-            new Planet(700, 500, 500),
-            new Planet(800, 600, 500),
-            new Planet(900, 700, 500),
-            new Planet(1000, 600, 500),
-            new Planet(1100, 500, 500),
-            new Planet(1200, 400, 500),
-            new Planet(1300, 250, 500),
-            new Planet(1400, 400, 500),
-            new Planet(1700, 500, 700),
-            new Planet(1900, 500, 700),
-            new Planet(400, 500, 1000),
-            new Planet(400, 700, 500),
-            new Planet(400, 800, 1000),
-            new Planet(400, 1000, 1000)
-    )*/);
-    planets.add(new Planet(1400, 600, 500));
-
-    shavermas = new LinkedList<>(Arrays.asList(
-        new Shaverma(510, 300),
-        new Shaverma(750, 500)
-    ));
-
-    blackHoles = new ArrayList<>(Arrays.asList(
-        new BlackHole(950, 400),
-        new BlackHole(1250, 500)
-    ));
-
-    spaceship = new Spaceship(900, 600);
+    MapParser mapParser = new MapParser(mapNumber, context);
+    spaceship = mapParser.getSpaceship();
+    planets = mapParser.getPlanets();
+    shavermas = mapParser.getShavermas();
+    blackHoles = mapParser.getBlackHoles();
+    mapWidth = mapParser.getMapWidth();
+    mapHeight = mapParser.getMapHeight();
   }
 
   public void setPixelDensity(float pixelDensity) {
@@ -87,12 +66,12 @@ public class Map {
   public void initOffsetGenerators(float widthDp, float heightDp) {
     xGenerator = new OffsetGenerator(
         new FloatVector(0, 0),
-        new FloatVector(MAP_WIDTH, widthDp),
+        new FloatVector(mapWidth, widthDp),
         new FloatVector(spaceship.getInternalX(), widthDp / 2));
 
     yGenerator = new OffsetGenerator(
         new FloatVector(0, 0),
-        new FloatVector(MAP_HEIGHT, heightDp),
+        new FloatVector(mapHeight, heightDp),
         new FloatVector(spaceship.getInternalY(), heightDp / 2));
   }
 
@@ -127,9 +106,9 @@ public class Map {
     spaceship.addAccelerationToMoveVector(deltaVector);
 
     if (spaceship.getInternalX() < 0 ||
-        spaceship.getInternalX() > MAP_WIDTH ||
+        spaceship.getInternalX() > mapWidth ||
         spaceship.getInternalY() < 0 ||
-        spaceship.getInternalY() > MAP_HEIGHT) {
+        spaceship.getInternalY() > mapHeight) {
       finishGame(false);
     }
   }

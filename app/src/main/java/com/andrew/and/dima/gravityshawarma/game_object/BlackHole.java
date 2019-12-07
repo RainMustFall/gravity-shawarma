@@ -9,6 +9,7 @@ import com.andrew.and.dima.gravityshawarma.utils.Constants;
 public class BlackHole extends GameObject {
   public BlackHole(float internalX, float internalY) {
     super(internalX, internalY, Constants.BLACK_HOLE_RADIUS, 0);
+    textureType = TextureType.BLACK_HOLE;
   }
 
   @Override

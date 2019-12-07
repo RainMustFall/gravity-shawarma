@@ -18,6 +18,7 @@ public class Spaceship extends GameObject {
   public Spaceship(float internalX, float internalY) {
     super(internalX, internalY, Constants.SPACESHIP_RADIUS, 0);
     moveVector = new FloatVector(0, 0);
+    textureType = TextureType.SPACESHIP;
   }
 
   @Override

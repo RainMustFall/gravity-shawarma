@@ -4,11 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,7 +34,8 @@ public class MapViewActivity extends AppCompatActivity {
     mapView = new MapView(this);
     setContentView(mapView);
 
-    map = new Map();
+
+    map = new Map(0, this);
 
     mapView.post(new Runnable() {
       @Override
