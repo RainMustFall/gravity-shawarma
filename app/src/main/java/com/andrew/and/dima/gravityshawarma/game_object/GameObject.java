@@ -15,7 +15,8 @@ public abstract class GameObject {
     PLANET_3,
     PLANET_4,
     SHAVERMA,
-    SPACESHIP
+    SPACESHIP,
+    SPACESHIP_ACCELERATED
   }
 
   // Object coordinates on the abstract internal map. These coordinates point
