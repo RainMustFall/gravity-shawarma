@@ -7,21 +7,13 @@ import android.graphics.Paint;
 import com.andrew.and.dima.gravityshawarma.utils.Constants;
 
 public class BlackHole extends GameObject {
-  public BlackHole(float x, float y) {
-    super(x, y, Constants.BLACK_HOLE_RADIUS);
+  public BlackHole(float internalX, float internalY) {
+    super(internalX, internalY, Constants.BLACK_HOLE_RADIUS, 0);
   }
 
   @Override
-  public void draw(Canvas canvas, Paint paint) {
-    paint.setColor(Color.BLACK);
-    canvas.drawCircle(x, y, r, paint);
-  }
-
-  public void teleport(Spaceship spaceship, BlackHole another) {
-    float dx = spaceship.getX() - x;
-    float dy = spaceship.getY() - y;
-
-    spaceship.setX(another.x + dx);
-    spaceship.setY(another.y + dy);
+  public void draw(Canvas canvas, Paint painter) {
+    painter.setColor(Color.BLACK);
+    canvas.drawCircle(screenX, screenY, screenRadius, painter);
   }
 }
