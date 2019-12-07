@@ -60,10 +60,11 @@ public class Map {
             new Planet(400, 800, 1000),
             new Planet(400, 1000, 1000)
     )*/);
+    planets.add(new Planet(1400, 600, 500));
 
     shavermas = new LinkedList<>(Arrays.asList(
-        new Shaverma(510, 150),
-        new Shaverma(750, 200)
+        new Shaverma(510, 300),
+        new Shaverma(750, 500)
     ));
 
     blackHoles = new ArrayList<>(Arrays.asList(

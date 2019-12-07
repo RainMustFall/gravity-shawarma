@@ -2,10 +2,13 @@ package com.andrew.and.dima.gravityshawarma.map;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -65,6 +68,11 @@ public class MapViewActivity extends AppCompatActivity {
     mapView.invalidate();
 
     if (map.hasGameFinished()) {
+      if (map.getFinishedState()) {
+        setResult(Activity.RESULT_OK);
+      } else {
+        setResult(Activity.RESULT_CANCELED);
+      }
       finish();
     }
   }
