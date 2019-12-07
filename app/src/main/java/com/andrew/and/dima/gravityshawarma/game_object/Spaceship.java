@@ -45,7 +45,7 @@ public class Spaceship extends GameObject {
     if (state) {
       spaceshipColor = Color.YELLOW;
     } else {
-      spaceshipColor = Color.BLUE;
+      spaceshipColor = Color.rgb(44, 57, 129);
     }
   }
 

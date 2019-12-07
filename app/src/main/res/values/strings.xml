@@ -1,8 +1,4 @@
 <resources>
     <string name="app_name">Gravity Shawarma</string>
-
     <string name="start_button">Start</string>
-    <string name="settings_button">Settings</string>
-    <string name="info_button">Information</string>
-
 </resources>
