@@ -12,7 +12,6 @@ import com.andrew.and.dima.gravityshawarma.game_object.GameObject;
 import com.andrew.and.dima.gravityshawarma.game_object.Planet;
 import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
 import com.andrew.and.dima.gravityshawarma.game_object.Spaceship;
-import com.andrew.and.dima.gravityshawarma.utils.Constants;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 import com.andrew.and.dima.gravityshawarma.utils.OffsetGenerator;
 import com.andrew.and.dima.gravityshawarma.utils.Utils;
@@ -28,8 +27,6 @@ public class Map {
   private final float MAP_WIDTH = 2000;
   private final float MAP_HEIGHT = 1200;
 
-  private float screenWidthDp = 0;
-  private float screenHeightDp = 0;
   private float pixelDensity = 0;
 
   private float offsetX;
@@ -65,13 +62,13 @@ public class Map {
     )*/);
 
     shavermas = new LinkedList<>(Arrays.asList(
-            new Shaverma(510, 150),
-            new Shaverma(750, 200)
+        new Shaverma(510, 150),
+        new Shaverma(750, 200)
     ));
 
     blackHoles = new ArrayList<>(Arrays.asList(
-            new BlackHole(950, 400),
-            new BlackHole(1250, 500)
+        new BlackHole(950, 400),
+        new BlackHole(1250, 500)
     ));
 
     spaceship = new Spaceship(900, 600);
@@ -81,21 +78,21 @@ public class Map {
     this.pixelDensity = pixelDensity;
   }
 
-  public void setScreenSize(float screenWidthDp, float screenHeightDp) {
-    this.screenWidthDp = screenWidthDp;
-    this.screenHeightDp = screenHeightDp;
-  }
-
+  // Shown part of map is defined by the offsets (from the point 0,0 of the
+  // internal map). Offset generators generate offsets to make the spaceship
+  // movements smooth (depending on its location and acceleration).
+  // We assume that screen size doesn't change, and initialize offset
+  // generators only once.
   public void initOffsetGenerators(float widthDp, float heightDp) {
     xGenerator = new OffsetGenerator(
-            new FloatVector(0, 0),
-            new FloatVector(MAP_WIDTH, widthDp),
-            new FloatVector(spaceship.getInternalX(), widthDp / 2));
+        new FloatVector(0, 0),
+        new FloatVector(MAP_WIDTH, widthDp),
+        new FloatVector(spaceship.getInternalX(), widthDp / 2));
 
     yGenerator = new OffsetGenerator(
-            new FloatVector(0, 0),
-            new FloatVector(MAP_HEIGHT, heightDp),
-            new FloatVector(spaceship.getInternalY(), heightDp / 2));
+        new FloatVector(0, 0),
+        new FloatVector(MAP_HEIGHT, heightDp),
+        new FloatVector(spaceship.getInternalY(), heightDp / 2));
   }
 
   // This function checks if interaction between the spaceship and shavermas /
@@ -123,15 +120,15 @@ public class Map {
 
     for (Planet planet : planets) {
       deltaVector.add(planet.calculateForceVector(
-              spaceship.getInternalX(), spaceship.getInternalY()));
+          spaceship.getInternalX(), spaceship.getInternalY()));
     }
 
     spaceship.addAccelerationToMoveVector(deltaVector);
 
     if (spaceship.getInternalX() < 0 ||
-            spaceship.getInternalX() > MAP_WIDTH ||
-            spaceship.getInternalY() < 0 ||
-            spaceship.getInternalY() > MAP_HEIGHT) {
+        spaceship.getInternalX() > MAP_WIDTH ||
+        spaceship.getInternalY() < 0 ||
+        spaceship.getInternalY() > MAP_HEIGHT) {
       finishGame(false);
     }
   }
@@ -143,8 +140,10 @@ public class Map {
       return;
     }
 
-    offsetX = xGenerator.getFunction(spaceship.getInternalX()) - spaceship.getInternalX();
-    offsetY = yGenerator.getFunction(spaceship.getInternalY()) - spaceship.getInternalY();
+    offsetX = xGenerator.getFunction(
+        spaceship.getInternalX()) - spaceship.getInternalX();
+    offsetY = yGenerator.getFunction(
+        spaceship.getInternalY()) - spaceship.getInternalY();
 
     setScreenCoordinates(planets);
     setScreenCoordinates(blackHoles);
@@ -156,10 +155,11 @@ public class Map {
     Iterator<Shaverma> iterator = shavermas.iterator();
     while (iterator.hasNext()) {
       if (spaceship.touches(iterator.next())) {
-        // TODO: improve this logic. Increase the shavermas counter, check if
-        // TODO: all shavermas are collected, etc.
         iterator.remove();
       }
+    }
+    if (shavermas.isEmpty()) {
+      finishGame(true);
     }
   }
 
@@ -180,23 +180,21 @@ public class Map {
     for (int i = 0; i < blackHoles.size(); ++i) {
       touchedHole |= spaceship.touches(blackHoles.get(i));
       if (touchedHole && !spaceship.hasAlreadyTeleported()) {
-        // TODO: improve random logic.
-        int nextBlackHoleIndex = Utils.getRandomExceptValue(blackHoles.size(), i, randomGenerator);
+        int nextBlackHoleIndex = Utils.getRandomExceptValue(
+            blackHoles.size(), i, randomGenerator);
 
         float teleportX = blackHoles.get(nextBlackHoleIndex).getInternalX()
-                - blackHoles.get(i).getInternalX();
+            - blackHoles.get(i).getInternalX();
         float teleportY = blackHoles.get(nextBlackHoleIndex).getInternalY()
-                - blackHoles.get(i).getInternalY();
+            - blackHoles.get(i).getInternalY();
 
         spaceship.teleport(teleportX, teleportY);
 
-        xGenerator.setNewBreak(
-                spaceship.getInternalX(),
-                spaceship.getScreenX() / pixelDensity);
+        xGenerator.setNewBreak(spaceship.getInternalX(),
+            spaceship.getScreenX() / pixelDensity);
 
-        yGenerator.setNewBreak(
-                spaceship.getInternalY(),
-                spaceship.getScreenY() / pixelDensity);
+        yGenerator.setNewBreak(spaceship.getInternalY(),
+            spaceship.getScreenY() / pixelDensity);
         break;
       }
     }
@@ -206,8 +204,8 @@ public class Map {
   private void interactWithPlanets() {
     for (Planet planet : planets) {
       if (spaceship.touches(planet)) {
-//        finishGame(false);
-//        break;
+        finishGame(false);
+        break;
       }
     }
   }

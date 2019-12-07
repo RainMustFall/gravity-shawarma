@@ -61,7 +61,6 @@ public class MapViewActivity extends AppCompatActivity {
   private void onTimerEvent() {
     mapView.updateSize();
     map.updateInternalState(mapView.getAcceleration());
-    map.setScreenSize(mapView.getWidthDp(), mapView.getHeightDp());
     map.updateScreenCoordinates();
     mapView.invalidate();
 
@@ -78,8 +77,6 @@ public class MapViewActivity extends AppCompatActivity {
     private float heightDp;
 
     private FloatVector acceleration;
-
-    private boolean isTouched = false;
 
     public MapView(Context context) {
       super(context);
@@ -104,10 +101,6 @@ public class MapViewActivity extends AppCompatActivity {
 
     public float getHeightDp() {
       return heightDp;
-    }
-
-    public boolean isTouched() {
-      return isTouched;
     }
 
     public FloatVector getAcceleration() {
@@ -136,7 +129,7 @@ public class MapViewActivity extends AppCompatActivity {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
       if (event.getAction() == MotionEvent.ACTION_DOWN
-              || event.getAction() == MotionEvent.ACTION_MOVE) {
+          || event.getAction() == MotionEvent.ACTION_MOVE) {
         float dx = event.getX() - getWidth() / 2f;
         float dy = event.getY() - getHeight() / 2f;
 
