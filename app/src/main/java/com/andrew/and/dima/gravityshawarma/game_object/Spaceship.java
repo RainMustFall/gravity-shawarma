@@ -19,7 +19,7 @@ public class Spaceship extends GameObject {
   protected boolean alreadyTeleported = false;
 
   public Spaceship(float internalX, float internalY, float maxFuel) {
-    super(internalX, internalY, Constants.SPACESHIP_RADIUS, 0);
+    super(internalX, internalY, Constants.SPACESHIP_RADIUS);
     this.maxFuel = maxFuel;
     this.currentFuel = maxFuel;
     moveVector = new FloatVector(0, 0);

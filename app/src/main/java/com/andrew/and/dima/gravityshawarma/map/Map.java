@@ -98,6 +98,8 @@ public class Map {
     }
 
     for (Planet planet : planets) {
+      System.out.println(planet.calculateForceVector(
+              spaceship.getInternalX(), spaceship.getInternalY()).x);
       deltaVector.add(planet.calculateForceVector(
           spaceship.getInternalX(), spaceship.getInternalY()));
     }

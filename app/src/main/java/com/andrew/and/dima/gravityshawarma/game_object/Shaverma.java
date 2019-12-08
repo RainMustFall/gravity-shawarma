@@ -8,7 +8,7 @@ import com.andrew.and.dima.gravityshawarma.utils.Constants;
 
 public class Shaverma extends GameObject {
   public Shaverma(float internalX, float internalY) {
-    super(internalX, internalY, Constants.SHAVERMA_RADIUS, 0);
+    super(internalX, internalY, Constants.SHAVERMA_RADIUS);
     textureType = TextureType.SHAVERMA;
   }
 

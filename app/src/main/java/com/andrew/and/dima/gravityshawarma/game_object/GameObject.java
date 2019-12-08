@@ -32,11 +32,6 @@ public abstract class GameObject {
   // constructor.
   protected float internalRadius;
 
-  // Physical mass of the object (to count gravity force in the game).
-  // Initialized once in the constructor. Can be equal to zero for some
-  // objects.
-  protected float mass;
-
   // Object coordinates on the real screen (depend on what part of map is shown
   // and etc). They are updated by MapView.
   protected float screenX;
@@ -50,12 +45,10 @@ public abstract class GameObject {
   // "screen" variables with zeros. Screen variables MUST BE updated by
   // MapView before you try to draw the object. You can use
   // updateScreenCoordinates method for that.
-  public GameObject(float internalX, float internalY, float internalRadius,
-                    float mass) {
+  public GameObject(float internalX, float internalY, float internalRadius) {
     this.internalX = internalX;
     this.internalY = internalY;
     this.internalRadius = internalRadius;
-    this.mass = mass;
     this.screenX = 0;
     this.screenY = 0;
   }
@@ -73,22 +66,6 @@ public abstract class GameObject {
     float dy = internalY - anotherObject.internalY;
     float dr = internalRadius + anotherObject.internalRadius;
     return ((dx * dx + dy * dy) <= dr * dr);
-  }
-
-  // Returns Force vector to the object, located by passed coordinates. By
-  // default uses internal coordinates and internalRadius values for that, but
-  // this behaviour can be overridden in derived classes.
-  public FloatVector calculateForceVector(float anotherObjectX,
-                                          float anotherObjectY) {
-    if (mass == 0) return new FloatVector(0, 0);
-
-    float dx = internalX - anotherObjectX;
-    float dy = internalY - anotherObjectY;
-    float distance = (float) Math.sqrt(dx * dx + dy * dy);
-
-    float power = mass * Constants.GRAVITY_COEFFICIENT / (dx * dx + dy * dy);
-
-    return new FloatVector(dx / distance * power, dy / distance * power);
   }
 
   // This abstract function draws an object on the passed canvas with use of
