@@ -140,6 +140,8 @@ public class MapActivity extends AppCompatActivity {
       }
 
       map.getSpaceship().draw(canvas, painter);
+      map.getInnerScreen().draw(canvas, painter);
+      map.getOuterScreen().draw(canvas, painter);
     }
 
     @Override

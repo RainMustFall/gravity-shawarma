@@ -1,6 +1,7 @@
 package com.andrew.and.dima.gravityshawarma.map;
 
 import android.content.Context;
+import android.graphics.Rect;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import com.andrew.and.dima.gravityshawarma.game_object.Spaceship;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 import com.andrew.and.dima.gravityshawarma.utils.OffsetGenerator;
 import com.andrew.and.dima.gravityshawarma.utils.Utils;
+import com.andrew.and.dima.gravityshawarma.visual_effects.BlackScreen;
 import com.andrew.and.dima.gravityshawarma.visual_effects.Explosion;
 import com.andrew.and.dima.gravityshawarma.visual_effects.ShavermaEffect;
 import com.andrew.and.dima.gravityshawarma.visual_effects.VisualEffect;
@@ -43,19 +45,38 @@ public class Map {
   private boolean finished = false;
   private boolean finishedState;
 
-  FloatVector deltaVector = new FloatVector();
+  private FloatVector deltaVector = new FloatVector();
+
+  private MapParser mapParser;
+
+  private BlackScreen innerScreen;
+  private BlackScreen outerScreen;
+
+  private int mapId;
+  private Context context;
 
   public Map(int mapId, Context context) {
-    randomGenerator = new Random();
-    effects = new LinkedList<>();
+    this.mapId = mapId;
+    this.context = context;
 
-    MapParser mapParser = new MapParser(mapId, context);
+    randomGenerator = new Random();
+    innerScreen = new BlackScreen(false, 10, this);
+    outerScreen = new BlackScreen(true, 10, this);
+    restartGame();
+  }
+
+  public void restartGame() {
+    mapParser = new MapParser(mapId, context);
+
+    effects = new LinkedList<>();
     spaceship = mapParser.getSpaceship();
     planets = mapParser.getPlanets();
     shavermas = mapParser.getShavermas();
     blackHoles = mapParser.getBlackHoles();
     mapWidth = mapParser.getMapWidth();
     mapHeight = mapParser.getMapHeight();
+
+    innerScreen.start();
   }
 
   public void setPixelDensity(float pixelDensity) {
@@ -215,11 +236,24 @@ public class Map {
         iterator.remove();
       }
     }
+
+    if (innerScreen.hasNext()) {
+      innerScreen.next();
+    }
+
+    if (outerScreen.hasNext()) {
+      outerScreen.next();
+    }
   }
 
   public void finishGame(boolean win) {
-    finished = true;
-    finishedState = win;
+    if (win) {
+      finished = true;
+      finishedState = true;
+    } else {
+      // This object will restart the game once the animation is over
+      outerScreen.start();
+    }
   }
 
   public boolean hasGameFinished() {
@@ -248,5 +282,17 @@ public class Map {
 
   public LinkedList<VisualEffect> getEffects() {
     return effects;
+  }
+
+  public Rect getScreenDimension() {
+    return new Rect(0, 0, (int)(mapWidth * pixelDensity), (int)(mapHeight * pixelDensity));
+  }
+
+  public BlackScreen getInnerScreen() {
+    return innerScreen;
+  }
+
+  public BlackScreen getOuterScreen() {
+    return outerScreen;
   }
 }
