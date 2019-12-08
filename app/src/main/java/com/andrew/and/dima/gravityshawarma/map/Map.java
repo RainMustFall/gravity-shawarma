@@ -138,6 +138,7 @@ public class Map {
         spaceship.getInternalX() > mapWidth ||
         spaceship.getInternalY() < 0 ||
         spaceship.getInternalY() > mapHeight) {
+      spaceship.setAliveState(false);
       finishGame(false);
     }
   }
