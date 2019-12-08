@@ -16,6 +16,8 @@ import com.andrew.and.dima.gravityshawarma.game_object.Spaceship;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 import com.andrew.and.dima.gravityshawarma.utils.OffsetGenerator;
 import com.andrew.and.dima.gravityshawarma.utils.Utils;
+import com.andrew.and.dima.gravityshawarma.visual_effects.Explosion;
+import com.andrew.and.dima.gravityshawarma.visual_effects.ShavermaEffect;
 import com.andrew.and.dima.gravityshawarma.visual_effects.VisualEffect;
 
 public class Map {
@@ -81,10 +83,13 @@ public class Map {
   // black holes is necessary, performs it. After that it updates the
   // coordinates of the spaceship.
   public void updateInternalState(FloatVector accelerationOn) {
-    updateSpaceshipState(accelerationOn);
-    collectShavermas();
-    interactWithPlanets();
-    interactWithBlackHoles();
+    if (spaceship.getAliveState()) {
+      updateSpaceshipState(accelerationOn);
+      collectShavermas();
+      interactWithPlanets();
+      interactWithBlackHoles();
+    }
+
     updateEffects();
     spaceship.move();
   }
@@ -140,7 +145,7 @@ public class Map {
     while (iterator.hasNext()) {
       Shaverma shaverma = iterator.next();
       if (spaceship.touches(shaverma)) {
-        effects.add(new VisualEffect(shaverma.getInternalX(), shaverma.getScreenY(), 0));
+        effects.add(new ShavermaEffect(shaverma));
         iterator.remove();
       }
     }
@@ -191,7 +196,10 @@ public class Map {
   private void interactWithPlanets() {
     for (Planet planet : planets) {
       if (spaceship.touches(planet)) {
-        finishGame(false);
+        // Explosion object will notify the map when the animation is over
+        // and the game should be finished
+        effects.add(new Explosion(spaceship, this));
+        spaceship.setAliveState(false);
         break;
       }
     }
@@ -209,7 +217,7 @@ public class Map {
     }
   }
 
-  private void finishGame(boolean win) {
+  public void finishGame(boolean win) {
     finished = true;
     finishedState = win;
   }

@@ -13,6 +13,8 @@ public class Spaceship extends GameObject {
 
   protected FloatVector moveVector;
 
+  protected boolean aliveState = true;
+
   // The color is now used to represent the accelerated and non-accelerated
   // states of the spaceship. It will be later replaced with the textures.
   protected int spaceshipColor = Color.BLUE;
@@ -28,8 +30,10 @@ public class Spaceship extends GameObject {
 
   @Override
   public void draw(Canvas canvas, Paint painter) {
-    painter.setColor(spaceshipColor);
-    canvas.drawCircle(screenX, screenY, screenRadius, painter);
+    if (aliveState) {
+      painter.setColor(spaceshipColor);
+      canvas.drawCircle(screenX, screenY, screenRadius, painter);
+    }
   }
 
   public void addAccelerationToMoveVector(FloatVector acceleration) {
@@ -76,5 +80,13 @@ public class Spaceship extends GameObject {
 
   public float getCurrentFuel() {
     return currentFuel;
+  }
+
+  public void setAliveState(boolean aliveState) {
+    this.aliveState = aliveState;
+  }
+
+  public boolean getAliveState() {
+    return aliveState;
   }
 }
