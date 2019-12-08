@@ -7,12 +7,15 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:resizeableActivity="false"
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
-        android:resizeableActivity="false"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".map.MapViewActivity"
+            android:name=".map.MapActivity"
+            android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name=".map_chooser.MapChooserActivity"
             android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".main.MainActivity"

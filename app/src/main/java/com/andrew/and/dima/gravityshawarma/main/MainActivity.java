@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.andrew.and.dima.gravityshawarma.map.MapViewActivity;
+import com.andrew.and.dima.gravityshawarma.map.MapActivity;
 import com.andrew.and.dima.gravityshawarma.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
     startButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Intent intent = new Intent(MainActivity.this, MapViewActivity.class);
-        intent.putExtra("mapNumber", 0);
+        Intent intent = new Intent(MainActivity.this, MapActivity.class);
+        intent.putExtra("mapNumber", 2);
         startActivityForResult(intent, START_LEVEL);
       }
     });

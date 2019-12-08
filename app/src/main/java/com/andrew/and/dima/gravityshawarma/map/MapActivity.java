@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MapViewActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity {
   private MapView mapView;
   private Map map;
 
