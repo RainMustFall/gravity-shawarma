@@ -8,6 +8,9 @@ import com.andrew.and.dima.gravityshawarma.utils.Constants;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 
 public class Spaceship extends GameObject {
+  protected float maxFuel;
+  protected float currentFuel;
+
   protected FloatVector moveVector;
 
   // The color is now used to represent the accelerated and non-accelerated
@@ -15,9 +18,12 @@ public class Spaceship extends GameObject {
   protected int spaceshipColor = Color.BLUE;
   protected boolean alreadyTeleported = false;
 
-  public Spaceship(float internalX, float internalY) {
+  public Spaceship(float internalX, float internalY, float maxFuel) {
     super(internalX, internalY, Constants.SPACESHIP_RADIUS, 0);
+    this.maxFuel = maxFuel;
+    this.currentFuel = maxFuel;
     moveVector = new FloatVector(0, 0);
+    textureType = TextureType.SPACESHIP;
   }
 
   @Override
@@ -44,7 +50,7 @@ public class Spaceship extends GameObject {
     if (state) {
       spaceshipColor = Color.YELLOW;
     } else {
-      spaceshipColor = Color.BLUE;
+      spaceshipColor = Color.rgb(44, 57, 129);
     }
   }
 
@@ -62,5 +68,13 @@ public class Spaceship extends GameObject {
 
   public float getMoveY() {
     return moveVector.y;
+  }
+
+  public float getMaxFuel() {
+    return maxFuel;
+  }
+
+  public float getCurrentFuel() {
+    return currentFuel;
   }
 }

@@ -4,11 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,10 +17,11 @@ import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
 import com.andrew.and.dima.gravityshawarma.utils.Constants;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MapViewActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity {
   private MapView mapView;
   private Map map;
 
@@ -36,7 +35,11 @@ public class MapViewActivity extends AppCompatActivity {
     mapView = new MapView(this);
     setContentView(mapView);
 
-    map = new Map();
+    Integer mapNumber =
+        Objects.requireNonNull(getIntent().getExtras()).getInt("mapNumber");
+    int mapId = getResources().getIdentifier("map" + mapNumber.toString(),
+        "raw", getPackageName());
+    map = new Map(mapId, this);
 
     mapView.post(new Runnable() {
       @Override

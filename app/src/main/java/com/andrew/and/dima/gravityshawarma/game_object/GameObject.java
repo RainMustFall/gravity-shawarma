@@ -7,6 +7,18 @@ import com.andrew.and.dima.gravityshawarma.utils.Constants;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 
 public abstract class GameObject {
+  public enum TextureType {
+    BLACK_HOLE,
+    PLANET_0,
+    PLANET_1,
+    PLANET_2,
+    PLANET_3,
+    PLANET_4,
+    SHAVERMA,
+    SPACESHIP,
+    SPACESHIP_ACCELERATED
+  }
+
   // Object coordinates on the abstract internal map. These coordinates point
   // to the center of the object (here we assume that all the objects are
   // circular). These values are initialized once (in the constructor) and
@@ -30,6 +42,9 @@ public abstract class GameObject {
   protected float screenX;
   protected float screenY;
   protected float screenRadius;
+
+  // This value is initialized in the constructors of derived classes.
+  protected TextureType textureType;
 
   // Constructor initializes constant variables with passed values and
   // "screen" variables with zeros. Screen variables MUST BE updated by
@@ -81,6 +96,10 @@ public abstract class GameObject {
   // be shown, because it actual screen coordinates can be negative or bigger
   // than the size of the screen.
   public abstract void draw(Canvas canvas, Paint painter);
+
+  public TextureType getTextureType() {
+    return textureType;
+  }
 
   public float getInternalX() {
     return internalX;
