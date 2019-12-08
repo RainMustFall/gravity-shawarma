@@ -16,6 +16,7 @@ import com.andrew.and.dima.gravityshawarma.game_object.Spaceship;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
 import com.andrew.and.dima.gravityshawarma.utils.OffsetGenerator;
 import com.andrew.and.dima.gravityshawarma.utils.Utils;
+import com.andrew.and.dima.gravityshawarma.visual_effects.VisualEffect;
 
 public class Map {
   private Random randomGenerator;
@@ -23,6 +24,7 @@ public class Map {
   private Spaceship spaceship;
   private ArrayList<Planet> planets;
   private LinkedList<Shaverma> shavermas;
+  private LinkedList<VisualEffect> effects;
   private ArrayList<BlackHole> blackHoles;
 
   private float mapWidth;
@@ -43,6 +45,7 @@ public class Map {
 
   public Map(int mapId, Context context) {
     randomGenerator = new Random();
+    effects = new LinkedList<>();
 
     MapParser mapParser = new MapParser(mapId, context);
     spaceship = mapParser.getSpaceship();
@@ -82,6 +85,7 @@ public class Map {
     collectShavermas();
     interactWithPlanets();
     interactWithBlackHoles();
+    updateEffects();
     spaceship.move();
   }
 
@@ -128,15 +132,19 @@ public class Map {
     setScreenCoordinates(blackHoles);
     setScreenCoordinates(shavermas);
     setScreenCoordinates(spaceship);
+    setScreenCoordinates(effects);
   }
 
   private void collectShavermas() {
     Iterator<Shaverma> iterator = shavermas.iterator();
     while (iterator.hasNext()) {
-      if (spaceship.touches(iterator.next())) {
+      Shaverma shaverma = iterator.next();
+      if (spaceship.touches(shaverma)) {
+        effects.add(new VisualEffect(shaverma.getInternalX(), shaverma.getScreenY(), 0));
         iterator.remove();
       }
     }
+
     if (shavermas.isEmpty()) {
       finishGame(true);
     }
@@ -189,6 +197,18 @@ public class Map {
     }
   }
 
+  private void updateEffects() {
+    Iterator<VisualEffect> iterator = effects.iterator();
+    while (iterator.hasNext()) {
+      VisualEffect effect = iterator.next();
+      if (effect.hasNext()) {
+        effect.next();
+      } else {
+        iterator.remove();
+      }
+    }
+  }
+
   private void finishGame(boolean win) {
     finished = true;
     finishedState = win;
@@ -216,5 +236,9 @@ public class Map {
 
   public List<BlackHole> getBlackHoleList() {
     return blackHoles;
+  }
+
+  public LinkedList<VisualEffect> getEffects() {
+    return effects;
   }
 }

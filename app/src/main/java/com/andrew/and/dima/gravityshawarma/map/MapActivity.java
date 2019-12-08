@@ -16,6 +16,7 @@ import com.andrew.and.dima.gravityshawarma.game_object.Planet;
 import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
 import com.andrew.and.dima.gravityshawarma.utils.Constants;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
+import com.andrew.and.dima.gravityshawarma.visual_effects.VisualEffect;
 
 import java.util.Objects;
 import java.util.Timer;
@@ -132,6 +133,10 @@ public class MapActivity extends AppCompatActivity {
 
       for (BlackHole blackHole : map.getBlackHoleList()) {
         blackHole.draw(canvas, painter);
+      }
+
+      for (VisualEffect effect : map.getEffects()) {
+        effect.draw(canvas, painter);
       }
 
       map.getSpaceship().draw(canvas, painter);
