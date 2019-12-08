@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class JsonMap {
-  private JsonGameObject spaceship;
+  private JsonGameObjectWithFuel spaceship;
   private ArrayList<JsonGameObjectWithMass> planets;
   private ArrayList<JsonGameObject> shavermas;
   private ArrayList<JsonGameObject> blackHoles;
@@ -25,7 +25,7 @@ public class JsonMap {
   }
 
   public Spaceship getSpaceship() {
-    return new Spaceship(spaceship.x, spaceship.y);
+    return new Spaceship(spaceship.x, spaceship.y, spaceship.fuel);
   }
 
   public ArrayList<Planet> getPlanets() {
