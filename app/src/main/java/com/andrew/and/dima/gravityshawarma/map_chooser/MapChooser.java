@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class MapChooser {
   public enum MapType {
-    FINISHED, OPENED, CLOSED, NOT_AVAILABLE
+    FINISHED, OPENED
   }
 
   private ArrayList<MapType> availableMaps;
