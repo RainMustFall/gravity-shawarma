@@ -8,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,6 +16,7 @@ import com.andrew.and.dima.gravityshawarma.game_object.Planet;
 import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
 import com.andrew.and.dima.gravityshawarma.utils.Constants;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
+import com.andrew.and.dima.gravityshawarma.visual_effects.VisualEffect;
 
 import java.util.Objects;
 import java.util.Timer;
@@ -47,7 +47,7 @@ public class MapActivity extends AppCompatActivity {
       public void run() {
         mapView.updateSize();
         map.setPixelDensity(mapView.getPixelDensity());
-        map.initOffsetGenerators(mapView.getWidthDp(), mapView.getHeightDp());
+        map.initScreenDpSize(mapView.getWidthDp(), mapView.getHeightDp());
       }
     });
 
@@ -142,7 +142,13 @@ public class MapActivity extends AppCompatActivity {
         blackHole.draw(canvas, painter);
       }
 
+      for (VisualEffect effect : map.getEffects()) {
+        effect.draw(canvas, painter);
+      }
+
       map.getSpaceship().draw(canvas, painter);
+      map.getInnerScreen().draw(canvas, painter);
+      map.getOuterScreen().draw(canvas, painter);
     }
 
     @Override

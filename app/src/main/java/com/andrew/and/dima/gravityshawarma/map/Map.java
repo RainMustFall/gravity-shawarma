@@ -1,6 +1,7 @@
 package com.andrew.and.dima.gravityshawarma.map;
 
 import android.content.Context;
+import android.graphics.Rect;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,8 +15,11 @@ import com.andrew.and.dima.gravityshawarma.game_object.Planet;
 import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
 import com.andrew.and.dima.gravityshawarma.game_object.Spaceship;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
-import com.andrew.and.dima.gravityshawarma.utils.OffsetGenerator;
 import com.andrew.and.dima.gravityshawarma.utils.Utils;
+import com.andrew.and.dima.gravityshawarma.visual_effects.BlackScreen;
+import com.andrew.and.dima.gravityshawarma.visual_effects.Explosion;
+import com.andrew.and.dima.gravityshawarma.visual_effects.ShavermaEffect;
+import com.andrew.and.dima.gravityshawarma.visual_effects.VisualEffect;
 
 public class Map {
   private Random randomGenerator;
@@ -23,6 +27,7 @@ public class Map {
   private Spaceship spaceship;
   private ArrayList<Planet> planets;
   private LinkedList<Shaverma> shavermas;
+  private LinkedList<VisualEffect> effects;
   private ArrayList<BlackHole> blackHoles;
 
   private float mapWidth;
@@ -33,24 +38,43 @@ public class Map {
   private float offsetX;
   private float offsetY;
 
-  private OffsetGenerator xGenerator;
-  private OffsetGenerator yGenerator;
-
   private boolean finished = false;
   private boolean finishedState;
 
-  FloatVector deltaVector = new FloatVector();
+  private FloatVector deltaVector = new FloatVector();
+
+  private MapParser mapParser;
+
+  private BlackScreen innerScreen;
+  private BlackScreen outerScreen;
+
+  private int mapId;
+  private Context context;
+  private float screenWidthDp;
+  private float screenHeightDp;
 
   public Map(int mapId, Context context) {
-    randomGenerator = new Random();
+    this.mapId = mapId;
+    this.context = context;
 
-    MapParser mapParser = new MapParser(mapId, context);
+    randomGenerator = new Random();
+    innerScreen = new BlackScreen(false, 10, this);
+    outerScreen = new BlackScreen(true, 10, this);
+    restartGame();
+  }
+
+  public void restartGame() {
+    mapParser = new MapParser(mapId, context);
+
+    effects = new LinkedList<>();
     spaceship = mapParser.getSpaceship();
     planets = mapParser.getPlanets();
     shavermas = mapParser.getShavermas();
     blackHoles = mapParser.getBlackHoles();
     mapWidth = mapParser.getMapWidth();
     mapHeight = mapParser.getMapHeight();
+
+    innerScreen.start();
   }
 
   public void setPixelDensity(float pixelDensity) {
@@ -62,26 +86,23 @@ public class Map {
   // movements smooth (depending on its location and acceleration).
   // We assume that screen size doesn't change, and initialize offset
   // generators only once.
-  public void initOffsetGenerators(float widthDp, float heightDp) {
-    xGenerator = new OffsetGenerator(
-        new FloatVector(0, 0),
-        new FloatVector(mapWidth, widthDp),
-        new FloatVector(spaceship.getInternalX(), widthDp / 2));
-
-    yGenerator = new OffsetGenerator(
-        new FloatVector(0, 0),
-        new FloatVector(mapHeight, heightDp),
-        new FloatVector(spaceship.getInternalY(), heightDp / 2));
+  public void initScreenDpSize(float widthDp, float heightDp) {
+    this.screenWidthDp = widthDp;
+    this.screenHeightDp = heightDp;
   }
 
   // This function checks if interaction between the spaceship and shavermas /
   // black holes is necessary, performs it. After that it updates the
   // coordinates of the spaceship.
   public void updateInternalState(FloatVector accelerationOn) {
-    updateSpaceshipState(accelerationOn);
-    collectShavermas();
-    interactWithPlanets();
-    interactWithBlackHoles();
+    if (spaceship.getAliveState()) {
+      updateSpaceshipState(accelerationOn);
+      collectShavermas();
+      interactWithPlanets();
+      interactWithBlackHoles();
+    }
+
+    updateEffects();
     spaceship.move();
   }
 
@@ -108,6 +129,7 @@ public class Map {
         spaceship.getInternalX() > mapWidth ||
         spaceship.getInternalY() < 0 ||
         spaceship.getInternalY() > mapHeight) {
+      spaceship.setAliveState(false);
       finishGame(false);
     }
   }
@@ -115,28 +137,31 @@ public class Map {
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
   public void updateScreenCoordinates() {
-    if (xGenerator == null || yGenerator == null) {
-      return;
-    }
+    offsetX = screenWidthDp / 2 - spaceship.getInternalX();
+    offsetX = Math.min(0, offsetX);
+    offsetX = Math.max(screenWidthDp - mapWidth, offsetX);
 
-    offsetX = xGenerator.getFunction(spaceship.getInternalX()) -
-        spaceship.getInternalX();
-    offsetY = yGenerator.getFunction(spaceship.getInternalY()) -
-        spaceship.getInternalY();
+    offsetY = screenHeightDp / 2 - spaceship.getInternalY();
+    offsetY = Math.min(0, offsetY);
+    offsetY = Math.max(screenHeightDp - mapHeight, offsetY);
 
     setScreenCoordinates(planets);
     setScreenCoordinates(blackHoles);
     setScreenCoordinates(shavermas);
     setScreenCoordinates(spaceship);
+    setScreenCoordinates(effects);
   }
 
   private void collectShavermas() {
     Iterator<Shaverma> iterator = shavermas.iterator();
     while (iterator.hasNext()) {
-      if (spaceship.touches(iterator.next())) {
+      Shaverma shaverma = iterator.next();
+      if (spaceship.touches(shaverma)) {
+        effects.add(new ShavermaEffect(shaverma));
         iterator.remove();
       }
     }
+
     if (shavermas.isEmpty()) {
       finishGame(true);
     }
@@ -162,18 +187,11 @@ public class Map {
         int nextBlackHoleIndex = Utils.getRandomExceptValue(
             blackHoles.size(), i, randomGenerator);
 
-        float teleportX = blackHoles.get(nextBlackHoleIndex).getInternalX()
-            - blackHoles.get(i).getInternalX();
-        float teleportY = blackHoles.get(nextBlackHoleIndex).getInternalY()
-            - blackHoles.get(i).getInternalY();
-
-        spaceship.teleport(teleportX, teleportY);
-
-        xGenerator.setNewBreak(spaceship.getInternalX(),
-            spaceship.getScreenX() / pixelDensity);
-
-        yGenerator.setNewBreak(spaceship.getInternalY(),
-            spaceship.getScreenY() / pixelDensity);
+        spaceship.teleport(
+            blackHoles.get(nextBlackHoleIndex).getInternalX()
+                - blackHoles.get(i).getInternalX(),
+            blackHoles.get(nextBlackHoleIndex).getInternalY()
+                - blackHoles.get(i).getInternalY());
         break;
       }
     }
@@ -183,15 +201,43 @@ public class Map {
   private void interactWithPlanets() {
     for (Planet planet : planets) {
       if (spaceship.touches(planet)) {
-        finishGame(false);
+        // Explosion object will notify the map when the animation is over
+        // and the game should be finished
+        effects.add(new Explosion(spaceship, this));
+        spaceship.setAliveState(false);
         break;
       }
     }
   }
 
-  private void finishGame(boolean win) {
-    finished = true;
-    finishedState = win;
+  private void updateEffects() {
+    Iterator<VisualEffect> iterator = effects.iterator();
+    while (iterator.hasNext()) {
+      VisualEffect effect = iterator.next();
+      if (effect.hasNext()) {
+        effect.next();
+      } else {
+        iterator.remove();
+      }
+    }
+
+    if (innerScreen.hasNext()) {
+      innerScreen.next();
+    }
+
+    if (outerScreen.hasNext()) {
+      outerScreen.next();
+    }
+  }
+
+  public void finishGame(boolean win) {
+    if (win) {
+      finished = true;
+      finishedState = true;
+    } else {
+      // This object will restart the game once the animation is over
+      outerScreen.start();
+    }
   }
 
   public boolean hasGameFinished() {
@@ -216,5 +262,22 @@ public class Map {
 
   public List<BlackHole> getBlackHoleList() {
     return blackHoles;
+  }
+
+  public LinkedList<VisualEffect> getEffects() {
+    return effects;
+  }
+
+  public Rect getScreenDimension() {
+    return new Rect(0, 0, (int) (mapWidth * pixelDensity),
+        (int) (mapHeight * pixelDensity));
+  }
+
+  public BlackScreen getInnerScreen() {
+    return innerScreen;
+  }
+
+  public BlackScreen getOuterScreen() {
+    return outerScreen;
   }
 }
