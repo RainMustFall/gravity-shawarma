@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -44,6 +45,7 @@ public class MapActivity extends AppCompatActivity {
     mapView.post(new Runnable() {
       @Override
       public void run() {
+        mapView.updateSize();
         map.setPixelDensity(mapView.getPixelDensity());
         map.initOffsetGenerators(mapView.getWidthDp(), mapView.getHeightDp());
       }
@@ -102,7 +104,7 @@ public class MapActivity extends AppCompatActivity {
       updateSize();
     }
 
-    public void updateSize() {
+    public synchronized void updateSize() {
       pixelDensity = getResources().getDisplayMetrics().density;
       widthDp = getWidth() / pixelDensity;
       heightDp = getHeight() / pixelDensity;
