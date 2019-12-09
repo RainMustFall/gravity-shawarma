@@ -8,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -48,7 +47,7 @@ public class MapActivity extends AppCompatActivity {
       public void run() {
         mapView.updateSize();
         map.setPixelDensity(mapView.getPixelDensity());
-        map.initOffsetGenerators(mapView.getWidthDp(), mapView.getHeightDp());
+        map.initScreenDpSize(mapView.getWidthDp(), mapView.getHeightDp());
       }
     });
 

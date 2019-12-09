@@ -54,6 +54,8 @@ public class Map {
 
   private int mapId;
   private Context context;
+  private float screenWidthDp;
+  private float screenHeightDp;
 
   public Map(int mapId, Context context) {
     this.mapId = mapId;
@@ -88,16 +90,9 @@ public class Map {
   // movements smooth (depending on its location and acceleration).
   // We assume that screen size doesn't change, and initialize offset
   // generators only once.
-  public void initOffsetGenerators(float widthDp, float heightDp) {
-    xGenerator = new OffsetGenerator(
-        new FloatVector(0, 0),
-        new FloatVector(mapWidth, widthDp),
-        new FloatVector(spaceship.getInternalX(), widthDp / 2));
-
-    yGenerator = new OffsetGenerator(
-        new FloatVector(0, 0),
-        new FloatVector(mapHeight, heightDp),
-        new FloatVector(spaceship.getInternalY(), heightDp / 2));
+  public void initScreenDpSize(float widthDp, float heightDp) {
+    this.screenWidthDp = widthDp;
+    this.screenHeightDp = heightDp;
   }
 
   // This function checks if interaction between the spaceship and shavermas /
@@ -146,14 +141,29 @@ public class Map {
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
   public void updateScreenCoordinates() {
-    if (xGenerator == null || yGenerator == null) {
-      return;
+    float halfOfScreenWidthDp = screenWidthDp / 2;
+    float halfOfScreenHeightDp = screenHeightDp / 2;
+
+    if (spaceship.getInternalX() - halfOfScreenWidthDp > 0 &&
+            spaceship.getInternalX() + halfOfScreenWidthDp < mapWidth) {
+      spaceship.setScreenX(halfOfScreenWidthDp);
+    } else if (spaceship.getInternalX() - halfOfScreenWidthDp < 0) {
+      spaceship.setScreenX(spaceship.getInternalX());
+    } else {
+      spaceship.setScreenX(screenWidthDp - mapWidth + spaceship.getInternalX());
     }
 
-    offsetX = xGenerator.getFunction(spaceship.getInternalX()) -
-        spaceship.getInternalX();
-    offsetY = yGenerator.getFunction(spaceship.getInternalY()) -
-        spaceship.getInternalY();
+    if (spaceship.getInternalY() - halfOfScreenHeightDp > 0 &&
+            spaceship.getInternalY() + halfOfScreenHeightDp < mapHeight) {
+      spaceship.setScreenY(halfOfScreenHeightDp);
+    } else if (spaceship.getInternalY() - halfOfScreenHeightDp < 0) {
+      spaceship.setScreenY(spaceship.getInternalY());
+    } else {
+      spaceship.setScreenY(screenHeightDp - mapHeight + spaceship.getInternalY());
+    }
+
+    offsetX = spaceship.getScreenX() - spaceship.getInternalX();
+    offsetY = spaceship.getScreenY() - spaceship.getInternalY();
 
     setScreenCoordinates(planets);
     setScreenCoordinates(blackHoles);
@@ -197,18 +207,11 @@ public class Map {
         int nextBlackHoleIndex = Utils.getRandomExceptValue(
             blackHoles.size(), i, randomGenerator);
 
-        float teleportX = blackHoles.get(nextBlackHoleIndex).getInternalX()
-            - blackHoles.get(i).getInternalX();
-        float teleportY = blackHoles.get(nextBlackHoleIndex).getInternalY()
-            - blackHoles.get(i).getInternalY();
-
-        spaceship.teleport(teleportX, teleportY);
-
-        xGenerator.setNewBreak(spaceship.getInternalX(),
-            spaceship.getScreenX() / pixelDensity);
-
-        yGenerator.setNewBreak(spaceship.getInternalY(),
-            spaceship.getScreenY() / pixelDensity);
+        spaceship.teleport(
+                blackHoles.get(nextBlackHoleIndex).getInternalX()
+                - blackHoles.get(i).getInternalX(),
+                blackHoles.get(nextBlackHoleIndex).getInternalY()
+                - blackHoles.get(i).getInternalY());
         break;
       }
     }
