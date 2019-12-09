@@ -64,6 +64,12 @@ public class MapActivity extends AppCompatActivity {
     mapViewUpdateTimer.scheduleAtFixedRate(timerTask, 0, 25);
   }
 
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    mapViewUpdateTimer.cancel();
+  }
+
   private void onTimerEvent() {
     mapView.updateSize();
     map.updateInternalState(mapView.getAcceleration());

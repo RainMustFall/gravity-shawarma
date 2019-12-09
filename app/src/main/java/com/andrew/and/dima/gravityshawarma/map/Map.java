@@ -115,14 +115,14 @@ public class Map {
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
   public void updateScreenCoordinates() {
-    if (xGenerator == null) {
+    if (xGenerator == null || yGenerator == null) {
       return;
     }
 
-    offsetX = xGenerator.getFunction(
-        spaceship.getInternalX()) - spaceship.getInternalX();
-    offsetY = yGenerator.getFunction(
-        spaceship.getInternalY()) - spaceship.getInternalY();
+    offsetX = xGenerator.getFunction(spaceship.getInternalX()) -
+        spaceship.getInternalX();
+    offsetY = yGenerator.getFunction(spaceship.getInternalY()) -
+        spaceship.getInternalY();
 
     setScreenCoordinates(planets);
     setScreenCoordinates(blackHoles);
