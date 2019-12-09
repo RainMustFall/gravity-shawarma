@@ -188,9 +188,9 @@ public class Map {
             blackHoles.size(), i, randomGenerator);
 
         spaceship.teleport(
-                blackHoles.get(nextBlackHoleIndex).getInternalX()
+            blackHoles.get(nextBlackHoleIndex).getInternalX()
                 - blackHoles.get(i).getInternalX(),
-                blackHoles.get(nextBlackHoleIndex).getInternalY()
+            blackHoles.get(nextBlackHoleIndex).getInternalY()
                 - blackHoles.get(i).getInternalY());
         break;
       }
@@ -269,7 +269,8 @@ public class Map {
   }
 
   public Rect getScreenDimension() {
-    return new Rect(0, 0, (int)(mapWidth * pixelDensity), (int)(mapHeight * pixelDensity));
+    return new Rect(0, 0, (int) (mapWidth * pixelDensity),
+        (int) (mapHeight * pixelDensity));
   }
 
   public BlackScreen getInnerScreen() {

@@ -36,15 +36,15 @@ public class BlackScreen extends VisualEffect {
 
   @Override
   public void draw(Canvas canvas, Paint painter) {
-    if (hasNext()) {
-      if (finishing) {
-        painter.setColor(Color.argb(255 / framesNumber * currentFrame, 0,0,0));
-      } else {
-        painter.setColor(Color.argb(255 - 255 / framesNumber * currentFrame, 0,0,0));
-      }
-
-      canvas.drawRect(listener.getScreenDimension(), painter);
+    if (!hasNext()) return;
+    if (finishing) {
+      painter.setColor(
+          Color.argb(255 / framesNumber * currentFrame, 0, 0, 0));
+    } else {
+      painter.setColor(
+          Color.argb(255 - 255 / framesNumber * currentFrame, 0, 0, 0));
     }
+    canvas.drawRect(listener.getScreenDimension(), painter);
   }
 
   public void start() {

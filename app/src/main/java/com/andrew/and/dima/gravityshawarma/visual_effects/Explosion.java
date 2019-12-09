@@ -17,7 +17,8 @@ public class Explosion extends VisualEffect {
   int transparency = 255;
 
   public Explosion(Spaceship spaceship, Map map) {
-    super(spaceship.getInternalX(), spaceship.getInternalY(), spaceship.getInternalRadius());
+    super(spaceship.getInternalX(), spaceship.getInternalY(),
+        spaceship.getInternalRadius());
     listener = map;
   }
 

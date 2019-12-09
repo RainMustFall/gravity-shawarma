@@ -13,7 +13,8 @@ public class ShavermaEffect extends VisualEffect {
   int transparency = 255;
 
   public ShavermaEffect(Shaverma shaverma) {
-    super(shaverma.getInternalX(), shaverma.getInternalY(), shaverma.getInternalRadius());
+    super(shaverma.getInternalX(), shaverma.getInternalY(),
+        shaverma.getInternalRadius());
   }
 
   @Override
