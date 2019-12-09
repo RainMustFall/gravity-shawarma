@@ -15,7 +15,6 @@ import com.andrew.and.dima.gravityshawarma.game_object.Planet;
 import com.andrew.and.dima.gravityshawarma.game_object.Shaverma;
 import com.andrew.and.dima.gravityshawarma.game_object.Spaceship;
 import com.andrew.and.dima.gravityshawarma.utils.FloatVector;
-import com.andrew.and.dima.gravityshawarma.utils.OffsetGenerator;
 import com.andrew.and.dima.gravityshawarma.utils.Utils;
 import com.andrew.and.dima.gravityshawarma.visual_effects.BlackScreen;
 import com.andrew.and.dima.gravityshawarma.visual_effects.Explosion;
@@ -38,9 +37,6 @@ public class Map {
 
   private float offsetX;
   private float offsetY;
-
-  private OffsetGenerator xGenerator;
-  private OffsetGenerator yGenerator;
 
   private boolean finished = false;
   private boolean finishedState;
