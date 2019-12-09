@@ -141,29 +141,13 @@ public class Map {
   // This function updates all the objects screen coordinates (screenX, screenY,
   // screenRadius) according to the real screen size.
   public void updateScreenCoordinates() {
-    float halfOfScreenWidthDp = screenWidthDp / 2;
-    float halfOfScreenHeightDp = screenHeightDp / 2;
+    offsetX = screenWidthDp / 2 - spaceship.getInternalX();
+    offsetX = Math.min(0, offsetX);
+    offsetX = Math.max(screenWidthDp - mapWidth, offsetX);
 
-    if (spaceship.getInternalX() - halfOfScreenWidthDp > 0 &&
-            spaceship.getInternalX() + halfOfScreenWidthDp < mapWidth) {
-      spaceship.setScreenX(halfOfScreenWidthDp);
-    } else if (spaceship.getInternalX() - halfOfScreenWidthDp < 0) {
-      spaceship.setScreenX(spaceship.getInternalX());
-    } else {
-      spaceship.setScreenX(screenWidthDp - mapWidth + spaceship.getInternalX());
-    }
-
-    if (spaceship.getInternalY() - halfOfScreenHeightDp > 0 &&
-            spaceship.getInternalY() + halfOfScreenHeightDp < mapHeight) {
-      spaceship.setScreenY(halfOfScreenHeightDp);
-    } else if (spaceship.getInternalY() - halfOfScreenHeightDp < 0) {
-      spaceship.setScreenY(spaceship.getInternalY());
-    } else {
-      spaceship.setScreenY(screenHeightDp - mapHeight + spaceship.getInternalY());
-    }
-
-    offsetX = spaceship.getScreenX() - spaceship.getInternalX();
-    offsetY = spaceship.getScreenY() - spaceship.getInternalY();
+    offsetY = screenHeightDp / 2 - spaceship.getInternalY();
+    offsetY = Math.min(0, offsetY);
+    offsetY = Math.max(screenHeightDp - mapHeight, offsetY);
 
     setScreenCoordinates(planets);
     setScreenCoordinates(blackHoles);
